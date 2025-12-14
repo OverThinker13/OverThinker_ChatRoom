@@ -1,0 +1,444 @@
+/* -------------------- 1. 赛博朋克主题变量 -------------------- */
+
+/* 确保颜色和主题与登录/注册页面保持一致 */
+:root {
+    --neon-green: #39ff14;
+    /* 核心高亮霓虹绿 */
+    --glow-color: rgba(57, 255, 20, 0.8);
+    /* 强光晕颜色 */
+    --dark-bg: #000400;
+    /* 纯黑背景/右侧区域 */
+    --mid-dark-bg: #03140b;
+    /* 左侧面板背景 */
+    --main-bg: #095723;
+    /* 主容器背景 */
+    --text-color-light: #d0e9d3;
+    /* 浅色文字 */
+    --text-color-faded: rgba(208, 233, 211, 0.6);
+    /* 柔和浅绿文字 */
+    --border-color: #05311a;
+    /* 深绿边框/分割线 */
+    --chat-left-bg: #41a14c;
+    /* 左侧气泡 (对方) - 较浅绿 */
+    --chat-right-bg: #024422;
+    /* 右侧气泡 (自己) - 较深绿 */
+}
+
+/* -------------------- 2. 布局和容器样式 -------------------- */
+
+.client-container {
+    height: 100vh;
+    /* 使用 100vh 确保占据整个视口高度 */
+    display: flex;
+    /* 水平垂直居中 */
+    justify-content: center;
+    align-items: center;
+}
+
+.main {
+    width: 1000px;
+    height: 740px;
+    /* 主体背景色改为深色 */
+    background-color: var(--main-bg);
+    border-radius: 5px;
+    display: flex;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+    /* 使用霓虹绿进行阴影 */
+    z-index: 2;
+    color: var(--text-color-light);
+    /* 默认文字颜色 */
+}
+
+.main .left {
+    width: 280px;
+    height: 100%;
+    /* 左侧面板使用更深的暗色 */
+    background-color: var(--mid-dark-bg);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.main .right {
+    width: 720px;
+    height: 100%;
+    /* 右侧背景色，比主体稍亮或稍暗，保持深色系 */
+    background-color: var(--dark-bg);
+    box-sizing: border-box;
+    padding: 0 20px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.cover {
+    width: 100%;
+    height: 100%;
+    /* 保持背景图片样式 */
+    background-image: url(../img/P1.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+
+    /* 模糊效果 */
+    filter: blur(60px);
+}
+
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* -------------------- 3. 左侧面板样式 -------------------- */
+
+.main .left .user {
+    height: 80px;
+    font-size: 20px;
+    line-height: 80px;
+    padding: 0 20px;
+    color: var(--neon-green);
+    /* 用户名高亮 */
+    text-shadow: 0 0 5px rgba(57, 255, 20, 0.4);
+}
+
+.main .left .search {
+    height: 40px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main .left .search input {
+    height: 34px;
+    width: 200px;
+    line-height: 34px;
+    font-size: 16px;
+    background-color: var(--dark-bg);
+    border: none;
+    outline: none;
+    color: var(--text-color-light);
+    padding-left: 10px;
+    border-radius: 5px;
+}
+
+.main .left .search button {
+    height: 34px;
+    width: 34px;
+    border: none;
+    outline: none;
+    background-color: var(--dark-bg);
+    border-radius: 5px;
+    /* 假设搜索图标是白色的，因此背景可以保持纯黑或深色 */
+    background-image: url(../img/Search.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center;
+    margin-left: 5px;
+}
+
+.main .left .search button:active {
+    background-color: rgba(57, 255, 20, 0.2);
+    /* 激活状态使用霓虹绿透明色 */
+}
+
+.main .left .tab {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.main .left .tab .tab-session,
+.main .left .tab .tab-friend {
+    height: 100%;
+    width: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    /* 假设图标是白色的，这里只保留背景颜色 */
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+    background-position: center center;
+}
+
+.main .left .tab .tab-session {
+    background-image: url(../img/chat1.png);
+}
+
+.main .left .tab .tab-friend {
+    background-image: url(../img/user2.png);
+}
+
+.main .left .tab .active-tab {
+    background-color: rgba(57, 255, 20, 0.1);
+    /* 选中标签页高亮 */
+    box-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+}
+
+.main .left .list {
+    height: 570px;
+    overflow: auto;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.main .left .list li {
+    height: 60px;
+    padding: 10px 20px;
+    border-top: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.main .left .list li:hover {
+    background-color: rgba(57, 255, 20, 0.05);
+}
+
+.main .left .list .selected {
+    background-color: var(--border-color);
+    /* #05311a */
+    box-shadow: inset 3px 0 0 var(--neon-green);
+    /* 霓虹绿选中指示条 */
+}
+
+/* 这个样式给会话列表使用 */
+.main .left .list li h3 {
+    height: 20px;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--text-color-light);
+}
+
+.main .left .list li h3 p {
+    font-size: 12px;
+    color: var(--text-color-faded);
+}
+
+/* 这个样式给好友列表使用 */
+.main .left .list li h4 {
+    height: 40px;
+    line-height: 40px;
+    font-size: 20px;
+    color: var(--neon-green);
+}
+
+/* 应用了这个类元素就会被隐藏 */
+.hide {
+    display: none;
+}
+
+
+/* -------------------- 4. 右侧聊天区域样式 -------------------- */
+
+.main .right .title {
+    height: 50px;
+    line-height: 50px;
+    font-size: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--neon-green);
+    text-shadow: 0 0 3px rgba(57, 255, 20, 0.5);
+}
+
+.main .right .message-show {
+    height: calc(100% - 250px);
+    /* 50px title + 150px input + 35px button + 15px padding/margin */
+    padding: 20px 0;
+    /* 聊天记录区的上下边距 */
+    /* border-top: 1px solid var(--border-color); 去掉顶部边框，避免重复 */
+    border-bottom: 1px solid var(--border-color);
+
+    overflow-y: auto;
+    /* 内容太多，自动进行滚动 */
+    display: flex;
+    flex-direction: column;
+    /* 确保消息垂直排列 */
+}
+
+.main .right .message-show .message {
+    margin-bottom: 15px;
+    /* 消息行之间的间距 */
+    display: flex;
+}
+
+.main .right .message-show .message-left {
+    justify-content: flex-start;
+}
+
+.main .right .message-show .message-right {
+    justify-content: flex-end;
+}
+
+.main .right .message-show .message .box {
+    width: auto;
+    /* 宽度自适应内容 */
+    max-width: 60%;
+    /* 最大宽度限制 */
+
+    /* 核心修改：使用Flexbox，让 header 和 p 垂直堆叠 */
+    display: flex;
+    flex-direction: column;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+/* 消息头部容器：包裹 h4 和 span */
+.main .right .message-show .message .box .header {
+    display: flex;
+    /* 让 h4 和 span 水平排列 */
+    align-items: baseline;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+/* 用户名 (h4) 样式 */
+.main .right .message-show .message .box h4 {
+    font-weight: 700;
+    height: auto;
+    line-height: normal;
+    font-size: 16px;
+    color: var(--neon-green);
+    text-shadow: 0 0 3px rgba(57, 255, 20, 0.5);
+    margin: 0;
+}
+
+/* 消息时间戳样式 (timestamp) */
+.main .right .message-show .message .box .timestamp {
+    font-size: 12px;
+    color: var(--text-color-faded);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+/* 消息内容 (p) 样式 */
+.main .right .message-show .message .box p {
+    padding: 10px;
+    /* 消息内容 padding */
+    border-radius: 5px;
+    margin: 0;
+    font-size: 14px;
+    border-top: 1px dashed rgba(57, 255, 20, 0.2);
+    /* 分割线 */
+}
+
+/* -------------------- 4.1 左侧消息样式 (对方) -------------------- */
+
+.main .right .message-show .message-left .box {
+    align-items: flex-start;
+}
+
+.main .right .message-show .message-left .box .header {
+    justify-content: flex-start;
+}
+
+.main .right .message-show .message-left .box h4 {
+    margin-right: 10px;
+    /* 名字和时间戳的间隔 */
+    order: 1;
+}
+
+.main .right .message-show .message-left .box .timestamp {
+    order: 2;
+}
+
+.main .right .message-show .message-left .box p {
+    background-color: var(--chat-left-bg);
+    /* #41a14c */
+    color: var(--dark-bg);
+    /* 对方文字使用深色，更易读 */
+}
+
+
+/* -------------------- 4.2 右侧消息样式 (自己) -------------------- */
+
+.main .right .message-show .message-right .box {
+    align-items: flex-end;
+}
+
+.main .right .message-show .message-right .box .header {
+    justify-content: flex-end;
+}
+
+/* 调整右侧消息的用户名和时间戳顺序和间隔 */
+.main .right .message-show .message-right .box h4 {
+    order: 2;
+    /* 名字在右侧 */
+    margin-left: 10px;
+}
+
+.main .right .message-show .message-right .box .timestamp {
+    order: 1;
+    /* 时间戳在左侧 */
+    margin-right: 5px;
+}
+
+.main .right .message-show .message-right .box p {
+    background-color: var(--chat-right-bg);
+    /* #024422 */
+    color: var(--text-color-light);
+    box-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
+    /* 自己的消息添加光晕 */
+}
+
+
+/* -------------------- 5. 消息输入和控制区 -------------------- */
+
+
+.main .right .message-input {
+    display: block;
+    width: 100%;
+    height: 100px;
+
+    border: none;
+    /* ------------------------ */
+
+    outline: none;
+    margin-top: 5px;
+    background-color: var(--dark-bg);
+    padding: 10px;
+    resize: none;
+
+    color: var(--text-color-light);
+    font-size: 16px;
+
+}
+
+.main .right .ctrl {
+    height: 40px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    padding-top: 50px;
+}
+
+.main .right .ctrl button {
+    height: 35px;
+    width: 100px;
+    background-color: transparent;
+    border: 1px solid var(--neon-green);
+    border-radius: 5px;
+    color: var(--neon-green);
+    font-size: 16px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+}
+
+.main .right .ctrl button:hover {
+    background-color: rgba(57, 255, 20, 0.1);
+    box-shadow: 0 0 10px var(--neon-green);
+}
+
+.main .right .ctrl button:active {
+    background-color: rgba(57, 255, 20, 0.25);
+    transform: translateY(1px);
+    box-shadow: 0 0 2px var(--neon-green);
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.java_chatroom.model.UserMapper">
+    <!-- 查询用户：保持不变，确保resultType正确 -->
+    <select id="selectByName" resultType="com.example.java_chatroom.model.User">
+        select userId, username, password from user where username = #{username}
+    </select>
+
+    <!-- 插入用户：显式指定字段名，与表结构对应 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="userId">
+        insert into user (username, password)
+        values (#{username}, #{password})
+    </insert>
+
+
+</mapper>

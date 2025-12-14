@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.java_chatroom.model.MessageMapper">
+    <select id="getLastMessageBySessionId" resultType="java.lang.String">
+      select content from message where sessionId = #{sessionId} order by postTime desc limit 1
+    </select>
+
+    <select id="getMessageBySessionId" resultType="com.example.java_chatroom.model.Message">
+        select messageId, fromId, user.username as fromName, sessionId, content, postTime
+        from user, message
+        where user.userId = message.fromId and message.sessionId = #{sessionId}
+        order by postTime desc limit 100
+    </select>
+
+    <insert id="add">
+        insert into message values(null, #{fromId}, #{sessionId}, #{content}, now())
+    </insert>
+</mapper>

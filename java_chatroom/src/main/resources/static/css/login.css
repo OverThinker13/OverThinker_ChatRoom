@@ -1,0 +1,234 @@
+/* 终极霓虹绿登录页面的样式 */
+
+/* 定义赛博朋克主色调 */
+:root {
+  --neon-green: #39ff14;
+  /* 核心高亮霓虹绿 */
+  --glow-color: rgba(57, 255, 20, 0.8);
+  /* 强光晕颜色 */
+  --dark-bg: #000000;
+  /* 纯黑背景 */
+  --dialog-bg: rgba(10, 20, 10, 0.85);
+  /* 半透明深绿背景 */
+  --border-color: #1a4f00;
+  /* 较深的绿边框 */
+  --text-color: #e0f0e0;
+  /* 浅绿色文字 */
+  --font-family: 'Roboto Mono', 'Consolas', monospace;
+  /* 科技等宽字体 */
+}
+
+/* 页面整体背景和字体 */
+body {
+  background-color: var(--dark-bg);
+  font-family: var(--font-family);
+  color: var(--text-color);
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 导航栏 - 强调线条和发光，添加波浪效果 */
+.nav {
+  height: 50px;
+  line-height: 50px;
+  padding: 0 30px;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  color: var(--neon-green);
+  background-color: var(--dark-bg);
+  text-shadow: 0 0 8px var(--neon-green);
+  border-bottom: 2px solid var(--neon-green);
+  box-shadow: 0 0 15px var(--glow-color);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 导航栏波浪效果 */
+.nav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(57, 255, 20, 0.15),
+      rgba(57, 255, 20, 0.3),
+      rgba(57, 255, 20, 0.15),
+      transparent);
+  transition: left 0.7s ease;
+  z-index: 1;
+}
+
+.nav:hover::before {
+  left: 100%;
+}
+
+/* 导航栏文字，确保它在波浪上方 */
+.nav {
+  position: relative;
+  z-index: 2;
+}
+
+/* 主容器 - 居中 */
+.login-container {
+  width: 100%;
+  height: calc(100vh - 50px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, rgba(57, 255, 20, 0.08) 0%, rgba(0, 0, 0, 1) 70%);
+}
+
+/* 登录对话框 - 棱角分明，强烈霓虹光晕 */
+.login-dialog {
+  width: 450px;
+  background-color: var(--dialog-bg);
+  border-radius: 5px;
+  box-shadow:
+    0 0 10px var(--neon-green),
+    0 0 20px var(--glow-color),
+    0 0 40px rgba(57, 255, 20, 0.3);
+  border: 1px solid var(--neon-green);
+  padding: 45px 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.5s ease;
+}
+
+/* 标题 - 强调发光和科技感 */
+.login-dialog h3 {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--neon-green);
+  text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--glow-color);
+  margin: 0 0 50px 0;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}
+
+.login-dialog .row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+/* 标签文字 - 简约，高亮 */
+.login-dialog .row span {
+  display: block;
+  min-width: 140px;
+  font-weight: 400;
+  color: var(--text-color);
+  text-transform: uppercase;
+  font-size: 16px;
+  margin-right: 15px;
+  text-shadow: 0 0 3px var(--neon-green);
+}
+
+/* 输入框 - 极简，只保留底部发光边框 */
+#username,
+#password {
+  flex-grow: 1;
+  max-width: 250px;
+  height: 40px;
+  font-size: 16px;
+  padding: 0 10px;
+  border: none;
+  border-bottom: 1px dashed var(--neon-green);
+  outline: none;
+  background-color: transparent;
+  color: var(--neon-green);
+  transition: border-bottom-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 输入框聚焦时的样式 - 底部边框变粗并增强光晕 */
+#username:focus,
+#password:focus {
+  border-bottom: 2px solid var(--neon-green);
+  box-shadow: 0 4px 10px rgba(57, 255, 20, 0.5);
+  color: var(--neon-green);
+}
+
+/* Placeholder 文本颜色 */
+::placeholder {
+  color: rgba(57, 255, 20, 0.5);
+  opacity: 1;
+}
+
+/* 登录按钮样式 - 强大的发光按钮 */
+#submit {
+  width: 100%;
+  height: 55px;
+  background-color: var(--neon-green);
+  color: var(--dark-bg);
+  border: 1px solid var(--neon-green);
+  border-radius: 5px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 30px;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  /* 初始发光 */
+  box-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--glow-color);
+}
+
+#submit:hover {
+  background-color: transparent;
+  color: var(--neon-green);
+  border: 2px solid var(--neon-green);
+  box-shadow: 0 0 15px var(--neon-green), 0 0 40px var(--glow-color);
+  transform: scale(1.03);
+}
+
+/* 点击时的效果 */
+#submit:active {
+  background-color: var(--neon-green);
+  color: var(--dark-bg);
+  transform: scale(0.98);
+  box-shadow: 0 0 5px var(--neon-green);
+}
+
+/* 链接行样式 */
+.login-dialog .link-row {
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--text-color);
+  text-align: center;
+}
+
+/* 霓虹链接样式 (基础/未访问状态) */
+.login-dialog .neon-link {
+  color: var(--neon-green);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px var(--neon-green);
+  margin-left: 5px;
+}
+
+/* 关键：已访问状态，确保颜色是霓虹绿，覆盖默认紫色 */
+.login-dialog .neon-link:visited {
+  color: var(--neon-green);
+  text-shadow: 0 0 5px var(--neon-green);
+}
+
+.login-dialog .neon-link:hover {
+  border-bottom: 1px solid var(--neon-green);
+  text-shadow: 0 0 10px var(--neon-green);
+}
+
+/* 点击时的效果 */
+.login-dialog .neon-link:active {
+  color: var(--neon-green);
+  text-shadow: 0 0 15px var(--glow-color);
+}

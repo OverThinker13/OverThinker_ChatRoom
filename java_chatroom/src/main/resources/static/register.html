@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册页面 - ChatRoom</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body>
+  <div class="nav">
+    ChatRoom
+  </div>
+  <div class="login-container">
+    <div class="login-dialog">
+      <h3>register</h3>
+      <div class="row">
+        <span>Username</span>
+        <input type="text" id="username">
+      </div>
+      <div class="row">
+        <span>Password</span>
+        <input type="password" id="password">
+      </div>
+      <div class="row">
+        <button id="submit">register</button>
+      </div>
+      <div class="link-row">
+        Already have an account? <a href="/login.html" class="neon-link">Login Here</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    let submitButton = document.querySelector('#submit')
+    submitButton.onclick = function () {
+      //1. 先获取到输入框中的内容
+      let username = document.querySelector('#username').value;
+      let password = document.querySelector('#password').value;
+      if (username == '' || password == '') {
+        alert("当前输入的用户名或者密码为空!");
+        return;
+      }
+      //2. 发送 ajax 请求进行注册
+      $.ajax({
+        type: 'post',
+        url: '/register',
+        data: {
+          username: username,
+          password: password
+        },
+        success: function (body) {
+          //3. 处理响应
+          if (body && body.userId > 0) {
+            //注册成功
+            alert("注册成功,请登录!");
+            //跳转到登录页面
+            location.assign('/login.html');
+          } else {
+            //注册失败
+            alert("注册失败,请重新注册!");
+          }
+        }
+      });
+    }
+  </script>
+
+</body>
+
+</html>

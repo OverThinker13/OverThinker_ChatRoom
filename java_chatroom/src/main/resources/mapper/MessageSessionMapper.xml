@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.java_chatroom.model.MessageSessionMapper">
+    <select id="getSessionIdByUserId" resultType="java.lang.Integer">
+        select sessionId from message_session
+        where sessionId in
+        (select sessionId from message_session_user where userId = #{userId})
+        order by lastTime desc
+    </select>
+
+    <select id="getFriendsIdBySessionId" resultType="com.example.java_chatroom.model.Friend">
+        select userId as friendId, username as friendName from user
+        where userId in
+        (select userId from message_session_user where sessionId = #{sessionId} and userId != #{selfUserId})
+    </select>
+
+    <insert id="addMessageSession" useGeneratedKeys="true" keyProperty="sessionId">
+        insert into message_session values (null, now());
+    </insert>
+
+    <insert id="addMessageSessionUser" >
+        insert into  message_session_user values (#{sessionId}, #{userId})
+    </insert>
+</mapper>
