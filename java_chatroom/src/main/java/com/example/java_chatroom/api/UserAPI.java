@@ -34,7 +34,18 @@ public class UserAPI {
             return new User();
         }
 
-        // 2. 如果都匹配, 登录成功! 创建会话!!
+        // 2. 检查用户是否已经在其他地方登录
+        // 注意：这只是一个简单的示例，实际生产环境中可能需要更复杂的会话管理机制
+        HttpSession oldSession = req.getSession(false);
+        if (oldSession != null) {
+            User oldUser = (User) oldSession.getAttribute("user");
+            if (oldUser != null && oldUser.getUserId() == user.getUserId()) {
+                System.out.println("用户 " + user.getUserId() + " 已在其他地方登录");
+                // 可以选择踢掉旧会话或拒绝新登录
+            }
+        }
+
+        // 3. 如果都匹配, 登录成功! 创建会话!!
         HttpSession session = req.getSession(true);
         session.setAttribute("user", user);
         // 在返回之前, 把 password 给干掉. 避免返回不必要的信息.

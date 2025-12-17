@@ -14,11 +14,18 @@ public class OnlineUserManger {
 
     // 1) 用户上线，给这个哈希表中插入键值对
     public void  online(int userId, WebSocketSession session) {
-        if(sessions.get(userId) != null) {
-            // 此时说明用户已经在线了，就登陆失败，不会记录这个映射关系，后续也就接受不到任何消息
-            System.out.println("[" + userId + "] 已经被登陆了！");
-            return;
+        // 检查用户是否已经在线
+        WebSocketSession oldSession = sessions.get(userId);
+        if(oldSession != null) {
+            // 如果用户已经在线，则关闭之前的连接
+            try {
+                oldSession.close();
+                System.out.println("[" + userId + "] 之前的会话已关闭");
+            } catch (Exception e) {
+                System.out.println("[" + userId + "] 关闭之前会话时出现异常: " + e.getMessage());
+            }
         }
+        // 更新用户的会话
         sessions.put(userId, session);
         System.out.println("[" + userId + "] 上线");
     }

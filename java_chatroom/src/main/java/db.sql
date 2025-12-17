@@ -14,6 +14,9 @@ insert into user values(1, '张三', '123');
 insert into user values(2, '李四', '123');
 insert into user values(3, '王五', '123');
 insert into user values(4, '赵六', '123');
+insert into user values(5, 'K', 'Azxc12388');
+insert into user values(6, 'N', 'Azxc12388');
+insert into user values(7, 'Thinker', '12208');
 
 -- 创建好友表
 drop table if exists friend;
@@ -28,6 +31,11 @@ insert into friend values(1, 3);
 insert into friend values(3, 1);
 insert into friend values(1, 4);
 insert into friend values(4, 1);
+insert into friend values(5, 6);
+insert into friend values(6, 5);
+insert into friend values(5, 7);
+insert into friend values(7, 5);
+
 
 -- 创建会话表
 drop table if exists  message_session;

@@ -1,6 +1,5 @@
 /* -------------------- 1. 赛博朋克主题变量 -------------------- */
 
-/* 确保颜色和主题与登录/注册页面保持一致 */
 :root {
     --neon-green: #39ff14;
     /* 核心高亮霓虹绿 */
@@ -28,9 +27,7 @@
 
 .client-container {
     height: 100vh;
-    /* 使用 100vh 确保占据整个视口高度 */
     display: flex;
-    /* 水平垂直居中 */
     justify-content: center;
     align-items: center;
 }
@@ -38,21 +35,17 @@
 .main {
     width: 1000px;
     height: 740px;
-    /* 主体背景色改为深色 */
     background-color: var(--main-bg);
     border-radius: 5px;
     display: flex;
     box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
-    /* 使用霓虹绿进行阴影 */
     z-index: 2;
     color: var(--text-color-light);
-    /* 默认文字颜色 */
 }
 
 .main .left {
     width: 280px;
     height: 100%;
-    /* 左侧面板使用更深的暗色 */
     background-color: var(--mid-dark-bg);
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
@@ -61,7 +54,6 @@
 .main .right {
     width: 720px;
     height: 100%;
-    /* 右侧背景色，比主体稍亮或稍暗，保持深色系 */
     background-color: var(--dark-bg);
     box-sizing: border-box;
     padding: 0 20px;
@@ -72,7 +64,6 @@
 .cover {
     width: 100%;
     height: 100%;
-    /* 保持背景图片样式 */
     background-image: url(../img/P1.png);
     background-repeat: no-repeat;
     background-position: center center;
@@ -101,7 +92,6 @@
     line-height: 80px;
     padding: 0 20px;
     color: var(--neon-green);
-    /* 用户名高亮 */
     text-shadow: 0 0 5px rgba(57, 255, 20, 0.4);
 }
 
@@ -133,7 +123,6 @@
     outline: none;
     background-color: var(--dark-bg);
     border-radius: 5px;
-    /* 假设搜索图标是白色的，因此背景可以保持纯黑或深色 */
     background-image: url(../img/Search.png);
     background-repeat: no-repeat;
     background-size: 20px 20px;
@@ -143,7 +132,6 @@
 
 .main .left .search button:active {
     background-color: rgba(57, 255, 20, 0.2);
-    /* 激活状态使用霓虹绿透明色 */
 }
 
 .main .left .tab {
@@ -159,7 +147,6 @@
     width: 50%;
     cursor: pointer;
     transition: background-color 0.2s;
-    /* 假设图标是白色的，这里只保留背景颜色 */
     background-repeat: no-repeat;
     background-size: 30px 30px;
     background-position: center center;
@@ -175,7 +162,6 @@
 
 .main .left .tab .active-tab {
     background-color: rgba(57, 255, 20, 0.1);
-    /* 选中标签页高亮 */
     box-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
 }
 
@@ -188,6 +174,14 @@
 }
 
 .main .left .list li {
+    /* 【未读消息修正 1】：li 容器 */
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* 垂直居中对齐 */
+    justify-content: space-between;
+    /* 内容靠左，圆点靠右 */
+
     height: 60px;
     padding: 10px 20px;
     border-top: 1px solid var(--border-color);
@@ -201,9 +195,13 @@
 
 .main .left .list .selected {
     background-color: var(--border-color);
-    /* #05311a */
     box-shadow: inset 3px 0 0 var(--neon-green);
-    /* 霓虹绿选中指示条 */
+}
+
+/* 新增：包裹 h3 和 p 的容器，确保它们垂直堆叠 */
+.main .left .list li .session-info {
+    flex-grow: 1;
+    /* 允许信息区域占据最大空间 */
 }
 
 /* 这个样式给会话列表使用 */
@@ -214,7 +212,7 @@
     color: var(--text-color-light);
 }
 
-.main .left .list li h3 p {
+.main .left .list li p {
     font-size: 12px;
     color: var(--text-color-faded);
 }
@@ -229,7 +227,40 @@
 
 /* 应用了这个类元素就会被隐藏 */
 .hide {
-    display: none;
+    display: none !important;
+}
+
+/* -------------------- 3.1 未读消息计数样式 (新增) -------------------- */
+.unread-count {
+    /* 【未读消息修正 2】：绝对定位到右侧，垂直居中 */
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+
+    /* 赛博朋克主题配色 */
+    background-color: var(--neon-green);
+    color: var(--dark-bg);
+    text-shadow: none;
+
+    /* 使其成为圆形 */
+    border-radius: 50%;
+
+    /* 内部填充和大小 */
+    padding: 2px 6px;
+    min-width: 15px;
+    height: 15px;
+
+    /* 字体和对齐 */
+    text-align: center;
+    line-height: 15px;
+    font-size: 12px;
+    font-weight: bold;
+
+    /* 添加发光效果 */
+    box-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--neon-green);
+
+    z-index: 10;
 }
 
 
@@ -247,22 +278,16 @@
 
 .main .right .message-show {
     height: calc(100% - 250px);
-    /* 50px title + 150px input + 35px button + 15px padding/margin */
     padding: 20px 0;
-    /* 聊天记录区的上下边距 */
-    /* border-top: 1px solid var(--border-color); 去掉顶部边框，避免重复 */
     border-bottom: 1px solid var(--border-color);
 
     overflow-y: auto;
-    /* 内容太多，自动进行滚动 */
     display: flex;
     flex-direction: column;
-    /* 确保消息垂直排列 */
 }
 
 .main .right .message-show .message {
     margin-bottom: 15px;
-    /* 消息行之间的间距 */
     display: flex;
 }
 
@@ -276,11 +301,7 @@
 
 .main .right .message-show .message .box {
     width: auto;
-    /* 宽度自适应内容 */
     max-width: 60%;
-    /* 最大宽度限制 */
-
-    /* 核心修改：使用Flexbox，让 header 和 p 垂直堆叠 */
     display: flex;
     flex-direction: column;
     padding: 10px 15px;
@@ -290,7 +311,6 @@
 /* 消息头部容器：包裹 h4 和 span */
 .main .right .message-show .message .box .header {
     display: flex;
-    /* 让 h4 和 span 水平排列 */
     align-items: baseline;
     width: 100%;
     margin-bottom: 5px;
@@ -319,12 +339,10 @@
 /* 消息内容 (p) 样式 */
 .main .right .message-show .message .box p {
     padding: 10px;
-    /* 消息内容 padding */
     border-radius: 5px;
     margin: 0;
     font-size: 14px;
     border-top: 1px dashed rgba(57, 255, 20, 0.2);
-    /* 分割线 */
 }
 
 /* -------------------- 4.1 左侧消息样式 (对方) -------------------- */
@@ -339,7 +357,6 @@
 
 .main .right .message-show .message-left .box h4 {
     margin-right: 10px;
-    /* 名字和时间戳的间隔 */
     order: 1;
 }
 
@@ -349,9 +366,7 @@
 
 .main .right .message-show .message-left .box p {
     background-color: var(--chat-left-bg);
-    /* #41a14c */
     color: var(--dark-bg);
-    /* 对方文字使用深色，更易读 */
 }
 
 
@@ -368,22 +383,18 @@
 /* 调整右侧消息的用户名和时间戳顺序和间隔 */
 .main .right .message-show .message-right .box h4 {
     order: 2;
-    /* 名字在右侧 */
     margin-left: 10px;
 }
 
 .main .right .message-show .message-right .box .timestamp {
     order: 1;
-    /* 时间戳在左侧 */
     margin-right: 5px;
 }
 
 .main .right .message-show .message-right .box p {
     background-color: var(--chat-right-bg);
-    /* #024422 */
     color: var(--text-color-light);
     box-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
-    /* 自己的消息添加光晕 */
 }
 
 
@@ -396,8 +407,6 @@
     height: 100px;
 
     border: none;
-    /* ------------------------ */
-
     outline: none;
     margin-top: 5px;
     background-color: var(--dark-bg);

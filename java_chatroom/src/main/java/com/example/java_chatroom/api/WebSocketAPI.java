@@ -34,6 +34,8 @@ public class WebSocketAPI extends TextWebSocketHandler {
         System.out.println("[WebSocketAPI] 连接成功！");
         User user = (User)session.getAttributes().get("user");
         if (user == null) {
+            System.out.println("[WebSocketAPI] 用户未登录，拒绝连接");
+            session.close();
             return;
         }
         // 把这个键值对存起来
