@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页聊天程序</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/client.css">
+</head>
+
+<body>
+    <!-- 作为遮罩层，能够实现背景模糊的效果 -->
+    <div class="cover"></div>
+    <!-- 这个div作为整个界面的总的容器 -->
+    <div class="client-container">
+        <!-- 中间的聊天区域 -->
+        <div class="main">
+            <!-- 左侧区域，显示好友和会话列表 -->
+            <div class="left">
+                <!-- 当前登录用户用户名 -->
+                <div class="user">
+
+                </div>
+                <!-- 这是一个搜索框 -->
+                <div class="search">
+                    <!-- 搜索框的输入框 -->
+                    <input type="text" , placeholder="搜索">
+                    <!-- 点击按钮j进行搜索 -->
+                    <button></button>
+                </div>
+                <!-- 标签页 -->
+                <div class="tab">
+                    <!-- 会话列表标签 -->
+                    <div class="tab-session"></div>
+                    <!-- 好友列表标签 -->
+                    <div class="tab-friend"></div>
+                </div>
+                <!-- 会话列表 -->
+                <ul class="list" id="session-list">
+                    <!-- <li class="selected" message-session-id="">
+                        <h3></h3>
+                        <p></p>
+                    </li> -->
+                </ul>
+                <!-- 好友列表 -->
+                <ul class="list hide" id="friend-list">
+                    <!-- 存放好友列表 -->
+                </ul>
+            </div>
+            <!-- 右侧区域，显示聊天编辑框 -->
+            <div class="right">
+                <!-- 会话标题 -->
+                <div class="title"></div>
+                <!-- 消息区 -->
+                <div class="message-show">
+
+                    <!-- 一个消息行 -->
+                    <!-- <div class="message message-left">
+                        <div class="box">
+                            <div class="header">
+                                <h4>N</h4>
+                                <span class="timestamp">2025-12-14 00:00:00</span>
+                            </div>
+                            <p>去玩吗</p>
+                        </div>
+                    </div> -->
+
+                </div>
+                <!-- 消息编辑框 -->
+                <textarea class="message-input"></textarea>
+                <!-- 发送按钮 -->
+                <div class="ctrl">
+                    <button>发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="./js/client.js"></script>
+</body>
+
+</html>

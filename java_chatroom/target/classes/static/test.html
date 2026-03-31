@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试websocket的使用</title>
+</head>
+
+<body>
+    <input type="text" id="message">
+    <button id="send-button">发送</button>
+
+    <script>
+        // 编写js使用websocket的代码
+        // 1.创建一个websocket对象
+        let websocket = new WebSocket("ws://127.0.0.1:8080/test");
+        // 2.给这个websocket注册上一些回调函数
+        websocket.onopen = function () {
+            // 连接建立完成后，就会自动执行
+            console.log("websocket连接成功");
+        }
+
+        websocket.onclose = function () {
+            // 连接关闭后，就会自动执行
+            console.log("websocket连接关闭");
+        }
+
+        websocket.onerror = function () {
+            // 连接异常时，就会自动执行
+            console.log("websocket连接异常");
+        }
+
+        websocket.onmessage = function (e) {
+            // 当服务器端发送消息到客户端时，就会自动执行
+            console.log("收到服务器端消息：" + e.data);
+        }
+
+        let messageInput = document.querySelector("#message");
+        let sendButton = document.querySelector("#send-button");
+        sendButton.onclick = function () {
+            console.log("websocket发送消息：" + messageInput.value);
+            websocket.send(messageInput.value);
+        }
+    </script>
+
+</body>
+
+</html>
