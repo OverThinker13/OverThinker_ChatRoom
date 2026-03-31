@@ -1,16 +1,43 @@
+# Spring Boot 应用配置
 spring:
+  # 数据源配置
   datasource:
+    # MySQL数据库连接URL
+    # jdbc:mysql://主机:端口/数据库名?参数
+    # characterEncoding=utf8: 设置字符编码为UTF-8
+    # connectionCollation=utf8mb4_unicode_ci: 设置连接的排序规则，支持emoji等特殊字符
+    # useSSL=false: 不使用SSL连接（开发环境）
+    # serverTimezone=GMT%2B8: 设置时区为东八区（北京时间）
+    # allowPublicKeyRetrieval=true: 允许公钥检索（MySQL 8.0+需要）
     url: jdbc:mysql://127.0.0.1:3306/java_chatroom?characterEncoding=utf8&connectionCollation=utf8mb4_unicode_ci&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+    
+    # 数据库用户名
     username: root
+    
+    # 数据库密码
     password: Azxc12388
+    
+    # MySQL JDBC驱动类
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+# MyBatis配置
 mybatis:
+  # Mapper XML文件位置
+  # classpath:mapper/**Mapper.xml 表示在resources/mapper目录下所有以Mapper.xml结尾的文件
+  # ** 表示递归匹配所有子目录
   mapper-locations: classpath:mapper/**Mapper.xml
-  # 添加以下配置 - 关键修复
+  
+  # MyBatis配置项
   configuration:
-    map-underscore-to-camel-case: true  # 开启驼峰命名自动映射
+    # 开启下划线转驼峰命名规则
+    # 例如：数据库字段 user_name 会自动映射为 Java 属性 userName
+    map-underscore-to-camel-case: true
 
+# 日志配置
 logging:
+  # 控制台日志输出格式
+  # %-5level: 日志级别（左对齐，占5个字符宽度）
+  # %msg: 日志消息内容
+  # %n: 换行符
   pattern:
     console: "[%-5level] %msg%n"
