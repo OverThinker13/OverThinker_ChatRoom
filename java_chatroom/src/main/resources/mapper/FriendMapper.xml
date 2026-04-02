@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.java_chatroom.mapper.FriendMapper">
+
+    <!--  查询好友列表  -->
     <select id="selectFriendList" resultType="com.example.java_chatroom.entity.Friend">
-        select userId as friendId, username as friendName from user
-        where userId in
-              (select friendId from friend where userId = #{userId})
+        select userId, friendId
+        from friend
+        where userId = #{userId} and status = 1
     </select>
+
+    <!--  添加好友关系  -->
+    <insert id="insertFriend">
+        insert into friend(userId, friendId, status, createTime)
+        values (#{userId}, #{friendId}, #{status}, #{createTime})
+    </insert>
+
+    <!--  检查是否已经为好友  -->
+    <select id="countByUserIdAndFriendId" resultType="java.lang.Integer">
+        select count(*)
+        from friend
+        where (userId = #{userId} and friendId = #{friendId})
+           or (userId = #{friendId} and friendId = #{userId})
+    </select>
+
+
+
 </mapper>

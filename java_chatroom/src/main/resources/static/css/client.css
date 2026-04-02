@@ -101,6 +101,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .main .left .search input {
@@ -134,6 +135,57 @@
     background-color: rgba(57, 255, 20, 0.2);
 }
 
+/* -------------------- 6. 搜索结果下拉框 -------------------- */
+.main .left .search .search-dropdown {
+    position: absolute;
+    top: 42px;
+    left: 20px;
+    right: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+    z-index: 100;
+}
+
+.main .left .search .search-dropdown .search-user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.main .left .search .search-dropdown .search-user-item h4 {
+    color: var(--text-color-light);
+    font-size: 14px;
+}
+
+.main .left .search .search-dropdown .search-user-item .add-btn {
+    background-color: var(--neon-green);
+    color: var(--dark-bg);
+    border: none;
+    padding: 4px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.main .left .search .search-dropdown .search-user-item .add-btn:hover {
+    background-color: rgba(57, 255, 20, 0.5);
+}
+
+.main .left .search .search-dropdown .no-result {
+    color: var(--text-color-faded);
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 0;
+}
+
 .main .left .tab {
     height: 50px;
     display: flex;
@@ -142,9 +194,10 @@
 }
 
 .main .left .tab .tab-session,
-.main .left .tab .tab-friend {
+.main .left .tab .tab-friend,
+.main .left .tab .tab-request {
     height: 100%;
-    width: 50%;
+    width: 33.33%;
     cursor: pointer;
     transition: background-color 0.2s;
     background-repeat: no-repeat;
@@ -158,6 +211,26 @@
 
 .main .left .tab .tab-friend {
     background-image: url(../img/user2.png);
+}
+
+.main .left .tab .tab-request {
+    background-image: url(../img/user2.png);
+    height: 100%;
+    width: 33.33%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+    background-position: center center;
+}
+
+.main .left .tab .tab-request:hover {
+    background-color: rgba(57, 255, 20, 0.05);
+}
+
+.main .left .tab .tab-request.active-tab {
+    background-color: rgba(57, 255, 20, 0.1);
+    box-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
 }
 
 .main .left .tab .active-tab {
@@ -223,6 +296,52 @@
     line-height: 40px;
     font-size: 20px;
     color: var(--neon-green);
+}
+
+/* 好友请求列表项 */
+.main .left .list .request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.main .left .list .request-item .request-info h4 {
+    color: var(--text-color-light);
+    font-size: 14px;
+    margin-bottom: 3px;
+}
+
+.main .left .list .request-item .request-info p {
+    color: var(--text-color-faded);
+    font-size: 12px;
+    margin: 0;
+}
+
+.main .left .list .request-item .request-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.main .left .list .request-item .request-actions .agree-btn {
+    background-color: var(--neon-green);
+    color: var(--dark-bg);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.main .left .list .request-item .request-actions .reject-btn {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
 }
 
 /* 应用了这个类元素就会被隐藏 */
@@ -450,4 +569,86 @@
     background-color: rgba(57, 255, 20, 0.25);
     transform: translateY(1px);
     box-shadow: 0 0 2px var(--neon-green);
+}
+
+/* -------------------- 6. 好友请求项 */
+.request-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.request-item h4 {
+    color: var(--text-color-light);
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.request-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.request-actions .agree-btn {
+    background-color: var(--neon-green);
+    color: var(--dark-bg);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.request-actions .reject-btn {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* -------------------- 7. 好友请求列表 -------------------- */
+/* 好友请求列表项 */
+#request-list .request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#request-list .request-info h4 {
+    color: var(--text-color-light);
+    font-size: 14px;
+    margin-bottom: 3px;
+}
+
+#request-list .request-info p {
+    color: var(--text-color-faded);
+    font-size: 12px;
+    margin: 0;
+}
+
+#request-list .request-actions {
+    display: flex;
+    gap: 8px;
+}
+
+#request-list .request-actions .agree-btn {
+    background-color: var(--neon-green);
+    color: var(--dark-bg);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+#request-list .request-actions .reject-btn {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
 }

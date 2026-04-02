@@ -12,5 +12,14 @@
         values (#{username}, #{password})
     </insert>
 
+    <!-- 根据用户ID查询用户信息 -->
+    <select id="selectById" resultType="com.example.java_chatroom.entity.User">
+        select userId, username, password from user where userId = #{userId}
+    </select>
+
+    <!-- 根据用户名模糊查询用户列表 -->
+    <select id="selectByNameLike" resultType="com.example.java_chatroom.entity.User">
+        select userId, username, password from user where username like concat('%', #{username}, '%')
+    </select>
 
 </mapper>

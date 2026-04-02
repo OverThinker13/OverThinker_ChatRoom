@@ -8,6 +8,7 @@ D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\controlle
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\entity\MessageResponse.java
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\controller\TestWebSocketAPI.java
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\entity\User.java
+D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\entity\FriendRequest.java
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\entity\MessageSessionUserItem.java
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\controller\MessageController.java
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\mapper\FriendMapper.java
@@ -15,6 +16,7 @@ D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\entity\Fr
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\controller\UserController.java
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\entity\Message.java
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\entity\MessageSession.java
+D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\mapper\FriendRequestMapper.java
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\mapper\MessageMapper.java
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\mapper\MessageSessionMapper.java
 D:\App\Java\code\java_chatroom\src\main\java\com\example\java_chatroom\mapper\UserMapper.java

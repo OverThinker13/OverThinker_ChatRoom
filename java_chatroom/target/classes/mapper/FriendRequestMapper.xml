@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.java_chatroom.mapper.FriendRequestMapper">
+
+    <!-- 发送好友请求 -->
+    <insert id="insertFriendRequest" useGeneratedKeys="true" keyProperty="requestId">
+        insert into friend_request (fromUserId, fromUserName, toUserId)
+        values (#{fromUserId}, #{fromUserName}, #{toUserId})
+    </insert>
+
+    <!-- 根据用户ID查询收到的好友请求列表 -->
+    <select id="selectRequestByUserId" resultType="com.example.java_chatroom.entity.FriendRequest">
+        select requestId, fromUserId, fromUserName, toUserId, requestTime, status, handleTime
+        from friend_request
+        where toUserId = #{userId}
+        order by requestTime desc
+    </select>
+
+    <!-- 根据请求ID查询请求详情 -->
+    <select id="selectRequestById" resultType="com.example.java_chatroom.entity.FriendRequest">
+        select requestId, fromUserId, fromUserName, toUserId, requestTime, status, handleTime
+        from friend_request
+        where requestId = #{requestId}
+    </select>
+
+    <!-- 同意好友请求 -->
+    <update id="agreeRequest">
+        update friend_request
+        set status = 1, handleTime = current_timestamp
+        where requestId = #{requestId}
+    </update>
+
+    <!-- 拒绝好友请求 -->
+    <update id="rejectRequest">
+        update friend_request
+        set status = 2, handleTime = current_timestamp
+        where requestId = #{requestId}
+    </update>
+
+</mapper>

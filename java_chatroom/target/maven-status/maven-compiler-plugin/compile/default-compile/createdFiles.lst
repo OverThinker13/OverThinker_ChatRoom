@@ -18,4 +18,3 @@ com\example\java_chatroom\mapper\FriendMapper.class
 com\example\java_chatroom\mapper\MessageMapper.class
 com\example\java_chatroom\controller\UserController.class
 com\example\java_chatroom\entity\Friend.class
-db.sql

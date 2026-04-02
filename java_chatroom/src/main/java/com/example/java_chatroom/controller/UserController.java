@@ -1,18 +1,23 @@
 package com.example.java_chatroom.controller;
 
 import com.example.java_chatroom.entity.User;
+import com.example.java_chatroom.entity.FriendRequest;
 import com.example.java_chatroom.mapper.UserMapper;
+import com.example.java_chatroom.mapper.FriendMapper;
+import com.example.java_chatroom.mapper.FriendRequestMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -21,8 +26,15 @@ public class UserController {
     @Resource
     UserMapper userMapper;
 
+    @Resource
+    private FriendMapper friendMapper;
+
+    @Resource
+    private FriendRequestMapper friendRequestMapper;
+
+
+
     @PostMapping("/login")
-    @ResponseBody
     public Object login(String username, String password, HttpServletRequest req) {
 
         // 1. 先去数据库中查查, 看 username 能否找到对应的 user 对象
@@ -57,7 +69,6 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    @ResponseBody
     public Object register(String username, String password) {
         User user = null;
         try {
@@ -93,5 +104,52 @@ public class UserController {
         }
         user.setPassword("");
         return user;
+    }
+
+    // 搜索用户
+    @GetMapping("/searchUser")
+    public Object searchUser(String username) {
+        List<User> users = userMapper.selectByNameLike(username);
+        for (User user : users) {
+            user.setPassword(""); // 清除密码
+        }
+        return users;
+    }
+
+    // 添加好友（发送请求）
+    @PostMapping("/addFriend")
+    public Object addFriend(@RequestParam int toUserId, HttpServletRequest req) {
+        HttpSession session = req.getSession(false);
+        if (session == null) {
+            return "请先登录";
+        }
+
+        User fromUser = (User) session.getAttribute("user");
+
+        // 检查是否已经是好友
+        int isFriend = friendMapper.countByUserIdAndFriendId(fromUser.getUserId(), toUserId);
+        if (isFriend > 0) {
+            return "已经是好友了";
+        }
+
+        // 检查是否已经发送过请求
+        List<FriendRequest> existingRequests = friendRequestMapper.selectRequestByUserId(toUserId);
+        for (FriendRequest request : existingRequests) {
+            if (request.getFromUserId() == fromUser.getUserId() && request.getStatus() == 0) {
+                return "请求已发送，等待对方确认";
+            }
+        }
+
+        // 创建好友请求
+        FriendRequest request = new FriendRequest();
+        request.setFromUserId(fromUser.getUserId());
+        request.setFromUserName(fromUser.getUsername());
+        request.setToUserId(toUserId);
+
+        int ret = friendRequestMapper.insertFriendRequest(request);
+        if (ret > 0) {
+            return "请求已发送，等待对方确认";
+        }
+        return "发送失败";
     }
 }

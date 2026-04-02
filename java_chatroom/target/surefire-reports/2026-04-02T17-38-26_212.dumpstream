@@ -1,0 +1,5 @@
+# Created at 2026-04-02T17:38:26.353
+Boot Manifest-JAR contains absolute paths in classpath 'D:\App\Java\code\java_chatroom\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

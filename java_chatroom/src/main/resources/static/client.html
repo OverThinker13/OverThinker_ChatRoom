@@ -25,9 +25,13 @@
                 <!-- 这是一个搜索框 -->
                 <div class="search">
                     <!-- 搜索框的输入框 -->
-                    <input type="text" , placeholder="搜索">
+                    <input type="text" placeholder="搜索">
                     <!-- 点击按钮j进行搜索 -->
                     <button></button>
+                    <!-- 搜索结果下拉框 -->
+                    <div class="search-dropdown">
+                        <!-- 搜索到的用户列表 -->
+                    </div>
                 </div>
                 <!-- 标签页 -->
                 <div class="tab">
@@ -35,6 +39,8 @@
                     <div class="tab-session"></div>
                     <!-- 好友列表标签 -->
                     <div class="tab-friend"></div>
+                    <!-- 好友请求列表标签 -->
+                    <div class="tab-request"></div>
                 </div>
                 <!-- 会话列表 -->
                 <ul class="list" id="session-list">
@@ -46,6 +52,10 @@
                 <!-- 好友列表 -->
                 <ul class="list hide" id="friend-list">
                     <!-- 存放好友列表 -->
+                </ul>
+                <!-- 好友请求列表 -->
+                <ul class="list hide" id="request-list">
+                    <!-- 存放好友请求列表 -->
                 </ul>
             </div>
             <!-- 右侧区域，显示聊天编辑框 -->

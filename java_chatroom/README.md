@@ -1,3 +1,4 @@
+
 # 🚀 Java Chatroom 实时聊天室系统
 
 一个基于 **Spring Boot** 和 **WebSocket** 技术实现的轻量级实时聊天室项目。
@@ -17,7 +18,7 @@
 
 | 类别 | 技术名称 | 角色与描述 |
 | :--- | :--- | :--- |
-| **后端框架** | **Spring Boot 2.7.6** | 快速开发 Web 应用，简化配置。 |
+| **后端框架** | **Spring Boot 3.2.0** | 快速开发 Web 应用，简化配置。 |
 | **实时通信** | **Spring WebSocket** | 实现客户端与服务器的双向持久连接。 |
 | **数据访问** | **MyBatis** | 灵活的持久层框架，SQL 与代码分离。 |
 | **数据库** | **MySQL** | 关系型数据库，存储用户信息和聊天记录。 |
@@ -53,18 +54,19 @@
 ```
 java_chatroom/
 ├── src/
-│   ├── main/
-│   │   ├── java/com/example/java_chatroom/
-│   │   │   ├── api/           # 🌐 Controller 层
-│   │   │   ├── component/     # 🔌 组件类
-│   │   │   ├── config/        # ⚙️ 配置类
-│   │   │   └── model/         # 📦 数据模型
-│   │   ├── resources/
-│   │   │   ├── mapper/        # 📜 MyBatis XML 映射文件
-│   │   │   └── static/        # 🖥️ 前端静态资源 (HTML/CSS/JS)
-│   │   └── db.sql             # 💾 数据库初始化脚本
-├── pom.xml                    # Maven 依赖配置
-└── README.md                  # 项目说明文档 (当前文件)
+│   ├── main/
+│   │   ├── java/com/example/java_chatroom/
+│   │   │   ├── controller/    # 🌐 Controller 层
+│   │   │   ├── entity/        # � 实体类
+│   │   │   ├── mapper/        # 📜 MyBatis Mapper 接口
+│   │   │   ├── config/        # ⚙️ 配置类
+│   │   │   └── component/     # � 组件类
+│   │   ├── resources/
+│   │   │   ├── mapper/        # 📜 MyBatis XML 映射文件
+│   │   │   └── static/        # 🖥️ 前端静态资源 (HTML/CSS/JS)
+│   │   └── db.sql             # 💾 数据库初始化脚本
+├── pom.xml                    # Maven 依赖配置
+└── README.md                  # 项目说明文档 (当前文件)
 ```
 
 ## 🗃️ 数据库设计 (MySQL)
@@ -78,7 +80,8 @@ java_chatroom/
 | 表名 | 描述 | 关键字段 | 关系说明 |
 | :--- | :--- | :--- | :--- |
 | **user** | 用户基本信息 | `userId`, `username`, `password` | 存储登录凭证 |
-| **friend** | 用户好友关系 | `userId`, `friendId` | 记录谁是谁的好友 |
+| **friend** | 用户好友关系 | `userId`, `friendId`, `status`, `createTime` | 记录谁是谁的好友，支持待确认状态 |
+| **friend_request** | 好友请求记录 | `requestId`, `fromUserId`, `toUserId`, `status` | 存储好友请求，支持双向确认 |
 | **message\_session** | 会话信息 | `sessionId`, `lastTime` | 私聊会话的主键 |
 | **message\_session\_user** | 会话用户关联 | `sessionId`, `userId` | **多对多**：一个会话关联多个用户 (用于扩展群聊) |
 | **message** | 消息内容 | `messageId`, `fromId`, `sessionId`, `content`, `postTime` | 存储具体的聊天记录 |
@@ -104,6 +107,10 @@ java_chatroom/
 | 获取列表 | `/friendList` | GET | 查看当前用户的所有好友 |
 | 获取列表 | `/sessionList` | GET | 查看所有进行中的私聊会话 |
 | 创建会话 | `/session` | POST | 与指定好友创建一个新的会话 |
+| 搜索用户 | `/searchUser` | GET | 根据用户名搜索用户 |
+| 发送请求 | `/addFriend` | POST | 向指定用户发送好友请求 |
+| 获取请求 | `/getFriendRequests` | GET | 获取当前用户收到的好友请求列表 |
+| 处理请求 | `/handleRequest` | POST | 同意或拒绝好友请求 |
 
 ### 消息服务
 
@@ -118,9 +125,9 @@ java_chatroom/
 
 ### 🔧 运行环境要求
 
-  * **Java Development Kit (JDK):** 1.8 或更高版本
-  * **MySQL Server:** 5.7 或更高版本
-  * **Maven:** 3.6 或更高版本
+* **Java Development Kit (JDK):** 1.8 或更高版本
+* **MySQL Server:** 5.7 或更高版本
+* **Maven:** 3.6 或更高版本
 
 ### 📥 步骤
 
@@ -132,16 +139,16 @@ java_chatroom/
 
 2.  **初始化数据库:**
 
-      * 确保 MySQL 服务运行，并创建一个名为 `java_chatroom` 的数据库。
-      * 执行 SQL 脚本：
-        ```bash
-        mysql -u root -p < src/main/java/db.sql
-        ```
+    * 确保 MySQL 服务运行，并创建一个名为 `java_chatroom` 的数据库。
+    * 执行 SQL 脚本：
+      ```bash
+      mysql -u root -p < src/main/java/db.sql
+      ```
 
 3.  **配置数据库连接:**
 
-      * 打开 `src/main/resources/application.yml` 文件。
-      * 修改 `username` 和 `password` 为您的 MySQL 账户信息。
+    * 打开 `src/main/resources/application.yml` 文件。
+    * 修改 `username` 和 `password` 为您的 MySQL 账户信息。
 
     <!-- end list -->
 
@@ -178,23 +185,26 @@ java_chatroom/
 
 | 好友/会话列表 | 聊天区域 |
 | :---: | :---: |
-| <img width="2549" height="1403" alt="image" src="https://github.com/user-attachments/assets/0f7f5010-3e12-41a6-8539-82c586649444" /> | <img width="2559" height="1342" alt="image" src="https://github.com/user-attachments/assets/d26b27ab-c09c-4dbc-bc0b-ab375b919d08" /> |
+| <img width="2559" height="1337" alt="image" src="https://github.com/user-attachments/assets/a495bbfe-90b7-4a95-b8c3-8cfb33070d7a" /> | <img width="2559" height="1337" alt="image" src="https://github.com/user-attachments/assets/d6aa970a-e32b-4aca-b262-3311a451f772" /> |
 
 -----
 
 ## 🌟 功能特性总结
 
 1.  **用户认证体系:**
-      * 支持用户注册新账号。
-      * 实现基于会话的登录校验。
+    * 支持用户注册新账号。
+    * 实现基于会话的登录校验。
 2.  **高效实时通信:**
-      * 利用 WebSocket 实现消息的毫秒级推送。
-      * 支持一对一私密聊天。
+    * 利用 WebSocket 实现消息的毫秒级推送。
+    * 支持一对一私密聊天。
 3.  **完善的消息与会话管理:**
-      * 自动管理私聊会话的创建与激活。
-      * 持久化存储消息记录，支持查看历史消息。
-4.  **基础的好友关系:**
-      * 展示当前用户的好友列表。
+    * 自动管理私聊会话的创建与激活。
+    * 持久化存储消息记录，支持查看历史消息。
+4.  **完整的好友关系管理:**
+    * **搜索功能**：根据用户名搜索用户。
+    * **好友请求系统**：实现双向确认的好友请求流程。
+    * **请求列表**：在侧边栏独立展示好友请求。
+    * **自动刷新**：同意好友请求后，双方好友列表自动更新。
 
 -----
 
@@ -202,17 +212,16 @@ java_chatroom/
 
 本项目可进一步扩展以实现更丰富的功能：
 
-  * **好友请求功能:** 实现用户搜索、发送/接受好友请求的完整流程 (当前需手动修改 DB)。
-  * **个性化展示:**用户添加头像，个性签名等。
-  * **群聊支持:** 扩展会话模型，支持多人聊天室和群组管理。
-  * **消息类型扩展:** 支持发送图片、文件和表情包。
-  * **用户状态管理:** 实时显示用户的在线/离线状态和最后活跃时间。
-  * **UI/UX 优化:** 引入更现代的前端框架或库，实现响应式设计。
+* **个性化展示**: 用户添加头像，个性签名等。
+* **群聊支持**: 扩展会话模型，支持多人聊天室和群组管理。
+* **消息类型扩展**: 支持发送图片、文件和表情包。
+* **用户状态管理**: 实时显示用户的在线/离线状态和最后活跃时间。
+* **UI/UX 优化**: 引入更现代的前端框架或库，实现响应式设计。
 
 ## 🤝 贡献与许可
 
 我们欢迎任何形式的贡献，包括但不限于提交 Bug 报告 (Issue) 和功能改进代码 (Pull Request)。
 
-  * **许可证:** 本项目仅供学习和交流使用。
+* **许可证:** 本项目仅供学习和交流使用。
 
 -----
