@@ -56,17 +56,18 @@ java_chatroom/
 ├── src/
 │   ├── main/
 │   │   ├── java/com/example/java_chatroom/
-│   │   │   ├── controller/    # 🌐 Controller 层
-│   │   │   ├── entity/        # � 实体类
-│   │   │   ├── mapper/        # 📜 MyBatis Mapper 接口
-│   │   │   ├── config/        # ⚙️ 配置类
-│   │   │   └── component/     # � 组件类
+│   │   │   ├── controller/    # Controller 层，处理 HTTP 请求
+│   │   │   ├── service/       # Service 层，业务逻辑
+│   │   │   │   └── impl/      # Service 实现类
+│   │   │   ├── entity/        # 实体类
+│   │   │   ├── mapper/        # MyBatis Mapper 接口
+│   │   │   ├── config/        # 配置类
+│   │   │   └── component/     # 组件类（在线用户管理）
 │   │   ├── resources/
-│   │   │   ├── mapper/        # 📜 MyBatis XML 映射文件
-│   │   │   └── static/        # 🖥️ 前端静态资源 (HTML/CSS/JS)
-│   │   └── db.sql             # 💾 数据库初始化脚本
-├── pom.xml                    # Maven 依赖配置
-└── README.md                  # 项目说明文档 (当前文件)
+│   │   │   ├── mapper/        # MyBatis XML 映射文件
+│   │   │   └── static/        # 前端静态资源 (HTML/CSS/JS)
+├── pom.xml
+└── README.md
 ```
 
 ## 🗃️ 数据库设计 (MySQL)

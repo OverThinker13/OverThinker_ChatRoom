@@ -15,7 +15,7 @@ spring:
     username: root
     
     # 数据库密码
-    password: 123456
+    password: Azxc12388
     
     # MySQL JDBC驱动类
     driver-class-name: com.mysql.cj.jdbc.Driver

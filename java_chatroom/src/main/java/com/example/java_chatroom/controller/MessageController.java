@@ -1,24 +1,23 @@
 package com.example.java_chatroom.controller;
 
 import com.example.java_chatroom.entity.Message;
-import com.example.java_chatroom.mapper.MessageMapper;
+import com.example.java_chatroom.service.MessageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.Resource;
-import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @RestController
 public class MessageController {
+
     @Resource
-    private MessageMapper messageMapper;
+    private MessageService messageService;
 
     @GetMapping("/message")
     public Object getMessage(int sessionId) {
-        List<Message> messages = messageMapper.getMessageBySessionId(sessionId);
-        // 针对查询结果，进行逆置操作，毕竟页面上需要的是按照时间升序排序的消息，此处得到的是降序排序的消息
-        Collections.reverse(messages);
-        return messages;
+        return messageService.getMessageList(sessionId);
     }
 }
