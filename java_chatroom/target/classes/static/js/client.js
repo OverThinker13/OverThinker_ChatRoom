@@ -59,7 +59,6 @@ initSwitchTab();
 //////////////////////////////////////
 
 //创建一个websocket实例
-// let websocket = new WebSocket("ws://127.0.0.1:8080/WebSocketMessage");
 let websocket = new WebSocket("ws://" + location.host + "/WebSocketMessage");
 
 websocket.onopen = function () {
@@ -72,6 +71,10 @@ websocket.onmessage = function (e) {
 
     if (resp.type == 'message') {
         handleMessage(resp);
+    } else if (resp.type == 'online') {
+        updateFriendOnlineStatus(resp.fromId, true);
+    } else if (resp.type == 'offline') {
+        updateFriendOnlineStatus(resp.fromId, false);
     } else {
         console.log('resp.type 不符合要求', resp);
     }
@@ -114,9 +117,9 @@ function handleMessage(resp) {
 
     // 2.把新的消息内容，展示到li标签的预览区域中
     let p = currentSessionLi.querySelector('p');
-    p.innerHTML = resp.content;
-    if (p.innerHTML.length > 10) {
-        p.innerHTML = p.innerHTML.substring(0, 10) + '...';
+    p.textContent = resp.content;
+    if (p.textContent.length > 10) {
+        p.textContent = p.textContent.substring(0, 10) + '...';
     }
 
     // 3.把收到消息的会话，放在会话列表的顶部
@@ -232,10 +235,10 @@ function getUserInfo() {
         type: 'get',
         url: '/userInfo',
         success: function (body) {
-            if (body.userId && body.userId > 0) {
+            if (body.code === 200 && body.data && body.data.userId > 0) {
                 let userDiv = document.querySelector('.main .left .user');
-                userDiv.innerHTML = body.username;
-                userDiv.setAttribute("user-id", body.userId);
+                userDiv.querySelector('.username').innerHTML = body.data.username;
+                userDiv.setAttribute("user-id", body.data.userId);
             } else {
                 alert("当前用户未登录")
                 location.assign('/login.html');
@@ -246,6 +249,19 @@ function getUserInfo() {
 
 getUserInfo()
 
+// 退出登录
+$('.logout-btn').on('click', function () {
+    if (confirm('确认退出登录吗？')) {
+        $.ajax({
+            type: 'get',
+            url: '/logout',
+            success: function () {
+                location.assign('/login.html');
+            }
+        });
+    }
+});
+
 //////////////////////////////////////
 // 从浏览器中发送请求，获取用户列表
 //////////////////////////////////////
@@ -255,11 +271,12 @@ function getFriendList() {
         type: 'get',
         url: "/friendList",
         success: function (body) {
-            console.log('服务器返回的好友列表数据：', body);
+            if (body.code !== 200) return;
+            console.log('服务器返回的好友列表数据：', body.data);
             let friendListUL = document.querySelector('#friend-list');
             friendListUL.innerHTML = '';
 
-            for (let friend of body) {
+            for (let friend of body.data) {
                 let li = document.createElement('li');
                 li.innerHTML = '<h4>' + friend.friendName + '</h4>';
                 li.setAttribute('friend-id', friend.friendId);
@@ -288,10 +305,11 @@ function getSessionList() {
         url: 'sessionList',
         dataType: 'json',
         success: function (body) {
+            if (body.code !== 200) return;
             let sessionListUL = document.querySelector('#session-list');
             sessionListUL.innerHTML = '';
 
-            for (let session of body) {
+            for (let session of body.data) {
                 if (session.lastMessage.length > 10) {
                     session.lastMessage = session.lastMessage.substring(0, 10) + '...';
                 }
@@ -375,7 +393,8 @@ function getHistoryMessage(sessionId) {
         url: 'message?sessionId=' + sessionId,
         dataType: 'json',
         success: function (body) {
-            for (let message of body) {
+            if (body.code !== 200) return;
+            for (let message of body.data) {
                 addMessage(messageShowDiv, message);
             }
             // 加个操作：在构造后消息列表之后，控制滚动条，自动滚动到最下方
@@ -396,20 +415,35 @@ function scrollBottom(elum) {
 function addMessage(messageShowDiv, message) {
     let messageDiv = document.createElement('div');
 
-    let selfUsername = document.querySelector('.left .user').innerHTML;
+    let selfUsername = document.querySelector('.left .user .username').innerHTML;
     if (selfUsername == message.fromName) {
         messageDiv.className = 'message message-right';
     } else {
         messageDiv.className = 'message message-left';
     }
 
-    messageDiv.innerHTML = '<div class="box">'
-        + '<div class="header">'
-        + '<h4>' + message.fromName + '</h4>'
-        + '<span class="timestamp">' + message.postTime + '</span>'
-        + '</div>'
-        + '<p>' + message.content + '</p>'
-        + '</div>'
+    let boxDiv = document.createElement('div');
+    boxDiv.className = 'box';
+
+    let headerDiv = document.createElement('div');
+    headerDiv.className = 'header';
+
+    let h4 = document.createElement('h4');
+    h4.textContent = message.fromName;
+    headerDiv.appendChild(h4);
+
+    let span = document.createElement('span');
+    span.className = 'timestamp';
+    span.textContent = message.postTime;
+    headerDiv.appendChild(span);
+
+    boxDiv.appendChild(headerDiv);
+
+    let p = document.createElement('p');
+    p.textContent = message.content;
+    boxDiv.appendChild(p);
+
+    messageDiv.appendChild(boxDiv);
     messageShowDiv.appendChild(messageDiv);
 }
 
@@ -467,8 +501,9 @@ function createSession(friendId, sessionLi) {
         type: 'post',
         url: 'session?toUserId=' + friendId,
         success: function (body) {
-            console.log("会话创建成功！ sessionId = " + body.sessionId);
-            sessionLi.setAttribute('message-session-id', body.sessionId);
+            if (body.code !== 200) return;
+            console.log("会话创建成功！ sessionId = " + body.data.sessionId);
+            sessionLi.setAttribute('message-session-id', body.data.sessionId);
         },
         error: function () {
             console.log("会话创建失败！");
@@ -489,9 +524,10 @@ function searchUser(keyword) {
         url: '/searchUser',
         data: { username: keyword },
         success: function (body) {
-            console.log('搜索结果:', body);
-            if (body.length > 0) {
-                showSearchResult(body);
+            if (body.code !== 200) return;
+            console.log('搜索结果:', body.data);
+            if (body.data.length > 0) {
+                showSearchResult(body.data);
             } else {
                 $('.search-dropdown').html('<p class="no-result">未找到该用户</p>');
             }
@@ -513,8 +549,10 @@ function showSearchResult(users) {
             type: 'get',
             url: '/userInfo',
             async: false,
-            success: function (userInfo) {
-                selfUserId = userInfo.userId;
+            success: function (userInfoBody) {
+                if (userInfoBody.code === 200) {
+                    selfUserId = userInfoBody.data.userId;
+                }
             }
         });
     }
@@ -541,7 +579,11 @@ $(document).on('click', '.add-btn', function () {
         url: '/addFriend',
         data: { toUserId: userId },
         success: function (body) {
-            alert(body);
+            if (body.code === 200) {
+                alert(body.data);
+            } else {
+                alert(body.message);
+            }
         },
         error: function () {
             alert('添加失败');
@@ -555,10 +597,11 @@ function getFriendRequests() {
         type: 'get',
         url: '/getFriendRequests',
         success: function (body) {
+            if (body.code !== 200) return;
             let count = 0;
             let html = '';
 
-            for (let request of body) {
+            for (let request of body.data) {
                 if (request.status == 0) {
                     count++;
                     html += '<li class="request-item" data-request-id="' + request.requestId + '">';
@@ -603,12 +646,14 @@ $(document).on('click', '.agree-btn', function () {
             status: 1
         }),
         success: function (body) {
-            if (body && body.length >= 3) {
-                alert(body[0]);
-                // 更新请求方的好友列表
-                updateFriendList(body[1]);
-                // 更新被请求方的好友列表
-                updateFriendList(body[2]);
+            if (body.code !== 200) {
+                alert(body.message);
+                return;
+            }
+            if (body.data && body.data.length >= 3) {
+                alert(body.data[0]);
+                updateFriendList(body.data[1]);
+                updateFriendList(body.data[2]);
             } else {
                 alert('已添加为好友');
             }
@@ -632,7 +677,11 @@ $(document).on('click', '.reject-btn', function () {
             status: 2
         }),
         success: function (body) {
-            alert('已拒绝');
+            if (body.code === 200) {
+                alert('已拒绝');
+            } else {
+                alert(body.message);
+            }
             getFriendRequests();
         },
         error: function () {
@@ -647,6 +696,7 @@ function updateFriendList(friendList) {
     for (let friend of friendList) {
         html += '<li class="friend-item" data-friend-id="' + friend.friendId + '">';
         html += '<div class="friend-info">';
+        html += '<span class="online-dot ' + (friend.online ? 'online' : 'offline') + '"></span>';
         html += '<h4>' + friend.friendName + '</h4>';
         html += '</div>';
         html += '</li>';
@@ -662,13 +712,23 @@ function updateFriendList(friendList) {
     });
 }
 
+function updateFriendOnlineStatus(friendId, online) {
+    let friendItem = $(`.friend-item[data-friend-id="${friendId}"]`);
+    if (friendItem.length > 0) {
+        let dot = friendItem.find('.online-dot');
+        dot.removeClass('online offline').addClass(online ? 'online' : 'offline');
+    }
+}
+
 // 获取好友列表
 function getFriendList() {
     $.ajax({
         type: 'get',
         url: '/friendList',
         success: function (body) {
-            updateFriendList(body);
+            if (body.code === 200) {
+                updateFriendList(body.data);
+            }
         },
         error: function () {
             console.log('获取好友列表失败');

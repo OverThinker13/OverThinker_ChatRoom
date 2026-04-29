@@ -1,4 +1,8 @@
 # Spring Boot 应用配置
+server:
+  http2:
+    enabled: false
+
 spring:
   # 数据源配置
   datasource:
@@ -19,6 +23,19 @@ spring:
     
     # MySQL JDBC驱动类
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # Redis配置
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6380
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+          max-wait: -1ms
 
 # MyBatis配置
 mybatis:

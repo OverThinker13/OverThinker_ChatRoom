@@ -1,5 +1,6 @@
 package com.example.java_chatroom.service.impl;
 
+import com.example.java_chatroom.component.OnlineUserManger;
 import com.example.java_chatroom.entity.Friend;
 import com.example.java_chatroom.entity.FriendRequest;
 import com.example.java_chatroom.entity.User;
@@ -28,6 +29,9 @@ public class FriendServiceImpl implements FriendService {
     @Resource
     private UserMapper userMapper;
 
+    @Resource
+    private OnlineUserManger onlineUserManger;
+
     @Override
     public List<Friend> getFriendList(int userId) {
         List<Friend> friendList = friendMapper.selectFriendList(userId);
@@ -36,6 +40,7 @@ public class FriendServiceImpl implements FriendService {
             if (friendUser != null) {
                 friend.setFriendName(friendUser.getUsername());
             }
+            friend.setOnline(onlineUserManger.isOnline(friend.getFriendId()));
         }
         return friendList;
     }

@@ -41,6 +41,12 @@ public class MessageSessionServiceImpl implements MessageSessionService {
 
     @Override
     public int createSession(int userId, int toUserId) {
+        Integer existingSessionId = messageSessionMapper.getSessionIdByUserIds(userId, toUserId);
+        if (existingSessionId != null) {
+            log.info("[createSession] 已有会话 sessionId={}, userId1={}, userId2={}", existingSessionId, userId, toUserId);
+            return existingSessionId;
+        }
+
         MessageSession messageSession = new MessageSession();
         messageSessionMapper.addMessageSession(messageSession);
 
@@ -54,7 +60,8 @@ public class MessageSessionServiceImpl implements MessageSessionService {
         item2.setUserId(toUserId);
         messageSessionMapper.addMessageSessionUser(item2);
 
-        log.info("[createSession] sessionId={}, userId1={}, userId2={}", messageSession.getSessionId(), userId, toUserId);
+        log.info("[createSession] 新建会话 sessionId={}, userId1={}, userId2={}", messageSession.getSessionId(), userId,
+                toUserId);
         return messageSession.getSessionId();
     }
 }

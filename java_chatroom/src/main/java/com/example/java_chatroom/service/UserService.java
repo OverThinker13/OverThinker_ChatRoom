@@ -5,7 +5,10 @@ import java.util.List;
 
 public interface UserService {
     User login(String username, String password);
+
     User register(String username, String password);
+
     User getUserById(int userId);
-    List<User> searchUser(String username);
+
+    List<User> searchUser(String username, int currentUserId);
 }

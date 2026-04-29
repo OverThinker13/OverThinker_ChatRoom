@@ -1,26 +1,35 @@
 package com.example.java_chatroom.service.impl;
 
+import com.example.java_chatroom.entity.Friend;
 import com.example.java_chatroom.entity.User;
+import com.example.java_chatroom.mapper.FriendMapper;
 import com.example.java_chatroom.mapper.UserMapper;
 import com.example.java_chatroom.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private FriendMapper friendMapper;
 
     @Override
     public User login(String username, String password) {
         User user = userMapper.selectByName(username);
-        if (user == null || !user.getPassword().equals(password)) {
+        if (user == null || !encoder.matches(password, user.getPassword())) {
             log.warn("[login] 登录失败, username={}", username);
             return new User();
         }
@@ -32,7 +41,7 @@ public class UserServiceImpl implements UserService {
         try {
             User user = new User();
             user.setUsername(username);
-            user.setPassword(password);
+            user.setPassword(encoder.encode(password));
             userMapper.insert(user);
             user.setPassword("");
             return user;
@@ -48,11 +57,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> searchUser(String username) {
+    public List<User> searchUser(String username, int currentUserId) {
         List<User> users = userMapper.selectByNameLike(username);
-        for (User user : users) {
-            user.setPassword("");
+        List<Friend> friends = friendMapper.selectFriendList(currentUserId);
+        List<Integer> friendIds = new ArrayList<>();
+        friendIds.add(currentUserId);
+        for (Friend friend : friends) {
+            friendIds.add(friend.getFriendId());
         }
-        return users;
+        List<User> result = new ArrayList<>();
+        for (User user : users) {
+            if (!friendIds.contains(user.getUserId())) {
+                user.setPassword("");
+                result.add(user);
+            }
+        }
+        return result;
     }
 }

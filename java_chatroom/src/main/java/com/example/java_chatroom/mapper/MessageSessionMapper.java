@@ -1,10 +1,10 @@
 package com.example.java_chatroom.mapper;
 
-
 import com.example.java_chatroom.entity.Friend;
 import com.example.java_chatroom.entity.MessageSession;
 import com.example.java_chatroom.entity.MessageSessionUserItem;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -22,4 +22,7 @@ public interface MessageSessionMapper {
 
     // 4.给message_session_user表也新增对应的纪录
     void addMessageSessionUser(MessageSessionUserItem messageSessionUserItem);
+
+    // 5.查询两个用户之间是否已有会话（1对1），返回 sessionId，没有则返回 null
+    Integer getSessionIdByUserIds(@Param("userId1") int userId1, @Param("userId2") int userId2);
 }

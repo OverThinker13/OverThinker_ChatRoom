@@ -1,228 +1,292 @@
+# Java ChatRoom 实时聊天室
 
-# 🚀 Java Chatroom 实时聊天室系统
+基于 **Spring Boot 3.2 + WebSocket + JWT + Redis** 的即时通讯系统，部署在腾讯云服务器，公网可访问。
 
-一个基于 **Spring Boot** 和 **WebSocket** 技术实现的轻量级实时聊天室项目。
+---
 
-## ✨ 项目概述
+## 技术栈
 
-这是一个采用 **前后端分离** 架构的 Web 聊天应用。它专注于提供一个稳定、实时的消息通信平台，支持用户认证、好友管理、以及核心的一对一私聊功能。
+| 类别 | 技术 | 用途 |
+|------|------|------|
+| 核心框架 | Spring Boot 3.2 | 快速构建 Web 应用 |
+| 实时通信 | Spring WebSocket | 消息推送 + 在线状态通知 |
+| ORM | MyBatis | 数据持久化 |
+| 数据库 | MySQL 8.0+ | 用户、好友、消息、会话存储 |
+| 缓存/认证 | Redis 7.x | Token 管理（服务端主动失效）+ 在线状态 |
+| 认证 | JWT (JJWT 0.12.5) | 无状态认证 |
+| 安全 | HttpOnly Cookie | 防 XSS 窃取 Token |
+| 加密 | BCrypt (Spring Security Crypto) | 密码加密 |
+| Redis 连接池 | Commons Pool2 + Lettuce | 性能优化，避免反复建连 |
+| 构建 | Maven | 依赖管理 |
+| 前端 | HTML/CSS/JS + jQuery + WebSocket API | 赛博朋克主题界面 |
 
-| 特性 | 描述 |
-| :--- | :--- |
-| **实时通信** | 基于 WebSocket 实现，消息秒级推送。 |
-| **核心功能** | 用户注册登录、好友列表、私聊会话、消息历史记录。 |
-| **后端架构** | Spring Boot 配合 MyBatis，快速构建 RESTful API。 |
-| **前端技术** | 传统 HTML/CSS/JavaScript + jQuery，轻量易维护。 |
+---
 
-## 🛠️ 技术栈一览
+## 架构图
 
-| 类别 | 技术名称 | 角色与描述 |
-| :--- | :--- | :--- |
-| **后端框架** | **Spring Boot 3.2.0** | 快速开发 Web 应用，简化配置。 |
-| **实时通信** | **Spring WebSocket** | 实现客户端与服务器的双向持久连接。 |
-| **数据访问** | **MyBatis** | 灵活的持久层框架，SQL 与代码分离。 |
-| **数据库** | **MySQL** | 关系型数据库，存储用户信息和聊天记录。 |
-| **构建工具** | **Maven** | 项目依赖管理与构建。 |
-| **前端基础** | **HTML/CSS/JS** | 负责页面结构、样式和交互逻辑。 |
-| **交互库** | **jQuery/Ajax** | 简化 DOM 操作和发起异步 HTTP 请求。 |
+```
+浏览器 (HttpOnly Cookie 自动携带 JWT)
+    │
+    ├─ HTTP API ──→ JwtInterceptor ──→ Redis 校验 ──→ Controller ──→ Service ──→ MySQL
+    │                    │                  │
+    │             解析 Cookie JWT     查 token:user:{id} 是否存在
+    │
+    └─ WebSocket ──→ JwtWebSocketInterceptor ──→ WebSocketAPI
+                           │                           │
+                    握手时校验 JWT+Redis          消息转发 + 在线状态
+```
 
------
+---
 
-## 🏗️ 系统架构与数据流
-
-本项目最核心的部分是 **Spring Boot + WebSocket** 实现的实时通信机制。
-
-### 架构示意图
-
-本项目采用经典的三层架构（Controller/Service/Dao）配合 WebSocket 的通信模型。
-
-### 核心通信流程：WebSocket
-
-1.  用户通过 HTTP `/login` 登录成功后，获取会话信息。
-2.  用户发起 WebSocket 连接请求到 `/WebSocketMessage`。
-3.  服务器将用户 ID 和对应的 WebSocket 会话 (Session) 绑定存储。
-4.  用户 A 发送消息到服务器（通过 WebSocket）。
-5.  服务器根据消息中的目标用户 ID 查找对应的 WebSocket Session。
-6.  服务器通过目标 Session 将消息实时推送给用户 B。
-
------
-
-## 📁 项目结构概览
-
-清晰的模块化结构，便于开发者理解和维护：
+## 项目结构
 
 ```
 java_chatroom/
-├── src/
-│   ├── main/
-│   │   ├── java/com/example/java_chatroom/
-│   │   │   ├── controller/    # Controller 层，处理 HTTP 请求
-│   │   │   ├── service/       # Service 层，业务逻辑
-│   │   │   │   └── impl/      # Service 实现类
-│   │   │   ├── entity/        # 实体类
-│   │   │   ├── mapper/        # MyBatis Mapper 接口
-│   │   │   ├── config/        # 配置类
-│   │   │   └── component/     # 组件类（在线用户管理）
-│   │   ├── resources/
-│   │   │   ├── mapper/        # MyBatis XML 映射文件
-│   │   │   └── static/        # 前端静态资源 (HTML/CSS/JS)
 ├── pom.xml
-└── README.md
+│
+├── src/main/java/com/example/java_chatroom/
+│   ├── config/                          # 配置层
+│   │   ├── WebSocketConfig.java         # WebSocket 注册
+│   │   ├── WebMvcConfig.java            # 拦截器注册
+│   │   ├── JwtInterceptor.java          # HTTP 请求 JWT 拦截
+│   │   ├── JwtWebSocketInterceptor.java # WebSocket 握手 JWT 校验
+│   │   └── GlobalExceptionHandler.java  # 全局异常处理
+│   │
+│   ├── controller/                      # API 层
+│   │   ├── UserController.java          # 登录/注册/搜索/退出
+│   │   ├── FriendController.java        # 好友列表/请求处理
+│   │   ├── MessageSessionController.java# 会话列表/创建
+│   │   ├── MessageController.java       # 历史消息
+│   │   └── WebSocketAPI.java            # WebSocket 消息处理核心
+│   │
+│   ├── service/                         # 业务逻辑
+│   │   ├── impl/
+│   │   │   ├── UserServiceImpl.java
+│   │   │   ├── FriendServiceImpl.java
+│   │   │   ├── MessageSessionServiceImpl.java
+│   │   │   └── MessageServiceImpl.java
+│   │   ├── RedisTokenService.java       # Redis Token 管理
+│   │   └── ...
+│   │
+│   ├── mapper/                          # MyBatis Mapper
+│   ├── entity/                          # 实体类
+│   │   ├── ApiResult.java               # 统一响应格式
+│   │   ├── ResultCode.java              # 响应码枚举
+│   │   └── ...
+│   ├── exception/
+│   │   └── BusinessException.java       # 业务异常
+│   ├── component/
+│   │   └── OnlineUserManger.java        # 在线用户管理（内存+Redis）
+│   └── util/
+│       └── JwtUtil.java                 # JWT 生成/解析
+│
+├── src/main/resources/
+│   ├── application.yml                  # 本地配置
+│   ├── application-server.yml           # 服务器配置
+│   ├── mapper/                          # MyBatis XML 映射
+│   └── static/                          # 前端资源
+│       ├── login.html / register.html / client.html
+│       ├── css/    (赛博朋克主题)
+│       ├── js/client.js
+│       └── img/
+│
+└── 项目完整文档.md                       # 项目详细说明
 ```
 
-## 🗃️ 数据库设计 (MySQL)
+---
 
-系统采用 5 个核心数据表来实现用户关系和消息存储。
+## API 接口一览
 
-### 核心表结构关系图
+所有接口返回统一格式 `{ code, message, data }`。
 
-### 关键数据表 (SQL 摘录)
+### 用户模块
 
-| 表名 | 描述 | 关键字段 | 关系说明 |
-| :--- | :--- | :--- | :--- |
-| **user** | 用户基本信息 | `userId`, `username`, `password` | 存储登录凭证 |
-| **friend** | 用户好友关系 | `userId`, `friendId`, `status`, `createTime` | 记录谁是谁的好友，支持待确认状态 |
-| **friend_request** | 好友请求记录 | `requestId`, `fromUserId`, `toUserId`, `status` | 存储好友请求，支持双向确认 |
-| **message\_session** | 会话信息 | `sessionId`, `lastTime` | 私聊会话的主键 |
-| **message\_session\_user** | 会话用户关联 | `sessionId`, `userId` | **多对多**：一个会话关联多个用户 (用于扩展群聊) |
-| **message** | 消息内容 | `messageId`, `fromId`, `sessionId`, `content`, `postTime` | 存储具体的聊天记录 |
+| 方法 | 路径 | 说明 | 登录 |
+|------|------|------|------|
+| POST | `/login` | 登录，返回 User + 设置 HttpOnly Cookie | ❌ |
+| POST | `/register` | 注册新用户 | ❌ |
+| GET | `/userInfo` | 获取当前用户信息 | ✅ |
+| GET | `/searchUser` | 搜索用户（排除自己和好友） | ✅ |
+| POST | `/addFriend` | 发送好友请求 | ✅ |
+| GET | `/logout` | 退出登录（删 Redis + 清 Cookie） | ✅ |
 
------
+### 好友模块
 
-## 🎯 核心功能模块与 API
+| 方法 | 路径 | 说明 | 登录 |
+|------|------|------|------|
+| GET | `/friendList` | 好友列表（含在线状态） | ✅ |
+| POST | `/handleRequest` | 处理好友请求（同意/拒绝） | ✅ |
+| GET | `/getFriendRequests` | 收到的好友请求列表 | ✅ |
 
-项目主要通过 RESTful API 和 WebSocket 端点实现功能。
+### 会话/消息模块
 
-### 认证与用户信息
+| 方法 | 路径 | 说明 | 登录 |
+|------|------|------|------|
+| GET | `/sessionList` | 会话列表 | ✅ |
+| POST | `/session` | 创建/获取私聊会话 | ✅ |
+| GET | `/message` | 历史消息（最近 100 条） | ✅ |
 
-| 模块 | 接口/端点 | 方式 | 描述 |
-| :--- | :--- | :--- | :--- |
-| 用户注册 | `/register` | POST | 创建新用户 |
-| 用户登录 | `/login` | POST | 校验并建立用户会话 |
-| 获取信息 | `/userInfo` | GET | 获取当前登录用户的基本信息 |
+### WebSocket
 
-### 好友与会话管理
+| 路径 | 说明 |
+|------|------|
+| `/WebSocketMessage` | 实时消息通道，通过 Cookie 中的 JWT 认证 |
 
-| 模块 | 接口/端点 | 方式 | 描述 |
-| :--- | :--- | :--- | :--- |
-| 获取列表 | `/friendList` | GET | 查看当前用户的所有好友 |
-| 获取列表 | `/sessionList` | GET | 查看所有进行中的私聊会话 |
-| 创建会话 | `/session` | POST | 与指定好友创建一个新的会话 |
-| 搜索用户 | `/searchUser` | GET | 根据用户名搜索用户 |
-| 发送请求 | `/addFriend` | POST | 向指定用户发送好友请求 |
-| 获取请求 | `/getFriendRequests` | GET | 获取当前用户收到的好友请求列表 |
-| 处理请求 | `/handleRequest` | POST | 同意或拒绝好友请求 |
+---
 
-### 消息服务
+## 数据库设计（6 张表）
 
-| 模块 | 接口/端点 | 方式 | 描述 |
-| :--- | :--- | :--- | :--- |
-| 历史消息 | `/message` | GET | 根据 `sessionId` 分页获取历史聊天记录 |
-| 实时推送 | `/WebSocketMessage` | WebSocket | **核心**：建立实时双向通信通道 |
+| 表 | 说明 | 关键字段 |
+|----|------|---------|
+| user | 用户 | userId, username, password(BCrypt) |
+| friend | 好友关系 | userId, friendId, createTime |
+| friend_request | 好友请求 | fromUserId, toUserId, status(0待处理/1同意/2拒绝) |
+| message_session | 会话 | sessionId, lastTime |
+| message_session_user | 会话成员 | sessionId, userId |
+| message | 消息 | messageId, fromId, sessionId, content, postTime |
 
------
+### Redis 数据结构
 
-## ⚙️ 环境与运行指南
+| Key | 类型 | 用途 |
+|-----|------|------|
+| `token:user:{userId}` | String | 存储用户 JWT（24h 过期） |
+| `online_users` | Set | 在线用户 ID 集合 |
 
-### 🔧 运行环境要求
+---
 
-* **Java Development Kit (JDK):** 1.8 或更高版本
-* **MySQL Server:** 5.7 或更高版本
-* **Maven:** 3.6 或更高版本
+## 核心功能
 
-### 📥 步骤
+### 1. 认证系统（JWT + Redis + HttpOnly Cookie）
 
-1.  **克隆项目:**
+```
+登录 → 生成 JWT → 存 Redis → 设置 HttpOnly Cookie（JS 无法读取）
+请求 → Cookie 自动携带 → 拦截器解析 JWT → 查 Redis 校验 → 通过
+退出 → 删 Redis 记录 → 清 Cookie → token 立即失效
+踢人 → redis-cli DEL token:user:3 → 用户下次请求被拦截
+```
 
-    ```bash
-    git clone <repository-url>
-    ```
+JWT 和 Redis **双重校验**，解决了纯 JWT 方案无法服务端撤销 token 的痛点。
 
-2.  **初始化数据库:**
+### 2. 在线状态（Redis Set）
 
-    * 确保 MySQL 服务运行，并创建一个名为 `java_chatroom` 的数据库。
-    * 执行 SQL 脚本：
-      ```bash
-      mysql -u root -p < src/main/java/db.sql
-      ```
+- WebSocket 连接时，用户 ID 加入 Redis `online_users` 集合
+- 断开时移除，并向好友推送上线/下线通知
+- 好友列表接口通过 `SISMEMBER` 查询在线状态
+- 前端实时显示绿色发光圆点 / 灰色圆点
 
-3.  **配置数据库连接:**
+### 3. WebSocket 实时消息
 
-    * 打开 `src/main/resources/application.yml` 文件。
-    * 修改 `username` 和 `password` 为您的 MySQL 账户信息。
+- 握手阶段通过 JwtWebSocketInterceptor 从 Cookie 解析 JWT 认证
+- 消息接收后查询会话成员，遍历推送
+- 消息同时持久化到 MySQL，用于历史记录
 
-    <!-- end list -->
+### 4. 全局异常处理
 
-    ```yaml
-    spring:
-      datasource:
-        # ... url: jdbc:mysql://127.0.0.1:3306/java_chatroom? ...
-        username: root
-        password: your_password # <-- 替换您的密码
-    ```
+- `BusinessException` 业务异常 → 返回 400
+- `DuplicateKeyException` → 返回 400（用户名重复）
+- `Exception` → 返回 500
+- 统一 `ApiResult<T>` + `ResultCode` 枚举
 
-4.  **运行项目:**
+---
 
-    ```bash
-    mvn clean install # 编译和打包
-    mvn spring-boot:run # 启动 Spring Boot 应用
-    ```
+## 快速启动
 
-5.  **访问应用:**
-    打开浏览器访问：`http://localhost:8080/login.html`
+### 环境要求
 
------
+- JDK 17+
+- MySQL 8.0+
+- Redis 7.x
+- Maven 3.6+
 
-## 📸 界面展示 (Screenshots)
+### 本地运行
 
-### 登录与注册
+```bash
+# 1. 创建数据库
+mysql -u root -p -e "CREATE DATABASE java_chatroom DEFAULT CHARSET utf8mb4;"
 
-| 登录页面 | 注册页面 |
-| :---: | :---: |
-| <img width="2559" height="1337" alt="image" src="https://github.com/user-attachments/assets/2c1c7eea-efc0-4b41-ad46-ba4c44f72036" /> | <img width="2559" height="1337" alt="image" src="https://github.com/user-attachments/assets/efe47403-357a-4eea-b24a-7b808ab95c72" /> |
+# 2. 修改配置 application.yml（数据库密码、Redis 端口）
 
+# 3. 启动 Redis（确保 6379 或你配置的端口已启动）
 
-### 聊天主界面
+# 4. 打包运行
+mvn package -DskipTests
+mvn spring-boot:run
 
-| 好友/会话列表 | 聊天区域 |
-| :---: | :---: |
-| <img width="2559" height="1337" alt="image" src="https://github.com/user-attachments/assets/a495bbfe-90b7-4a95-b8c3-8cfb33070d7a" /> | <img width="2559" height="1337" alt="image" src="https://github.com/user-attachments/assets/d6aa970a-e32b-4aca-b262-3311a451f772" /> |
+# 5. 访问
+http://localhost:8080/login.html
+```
 
------
+### 服务器部署
 
-## 🌟 功能特性总结
+```bash
+# 1. 安装 Redis
+yum install -y redis && systemctl start redis
 
-1.  **用户认证体系:**
-    * 支持用户注册新账号。
-    * 实现基于会话的登录校验。
-2.  **高效实时通信:**
-    * 利用 WebSocket 实现消息的毫秒级推送。
-    * 支持一对一私密聊天。
-3.  **完善的消息与会话管理:**
-    * 自动管理私聊会话的创建与激活。
-    * 持久化存储消息记录，支持查看历史消息。
-4.  **完整的好友关系管理:**
-    * **搜索功能**：根据用户名搜索用户。
-    * **好友请求系统**：实现双向确认的好友请求流程。
-    * **请求列表**：在侧边栏独立展示好友请求。
-    * **自动刷新**：同意好友请求后，双方好友列表自动更新。
+# 2. 上传 jar + application-server.yml 到服务器
 
------
+# 3. 启动
+nohup java -jar java_chatroom-0.0.1-SNAPSHOT.jar \
+    --spring.config.additional-location=./application-server.yml \
+    > app.log 2>&1 &
 
-## 💡 Future Enhancements (未来展望)
+# 4. 查看日志
+tail -f app.log
+```
 
-本项目可进一步扩展以实现更丰富的功能：
+### 运维命令
 
-* **个性化展示**: 用户添加头像，个性签名等。
-* **群聊支持**: 扩展会话模型，支持多人聊天室和群组管理。
-* **消息类型扩展**: 支持发送图片、文件和表情包。
-* **用户状态管理**: 实时显示用户的在线/离线状态和最后活跃时间。
-* **UI/UX 优化**: 引入更现代的前端框架或库，实现响应式设计。
+```bash
+# 停止项目
+kill -9 $(lsof -t -i:8080)
 
-## 🤝 贡献与许可
+# 查看 Redis 数据
+redis-cli keys '*'
+redis-cli SMEMBERS online_users
 
-我们欢迎任何形式的贡献，包括但不限于提交 Bug 报告 (Issue) 和功能改进代码 (Pull Request)。
+# 踢人下线
+redis-cli DEL token:user:3
+redis-cli SREM online_users 3
 
-* **许可证:** 本项目仅供学习和交流使用。
+# 清空 Redis
+redis-cli FLUSHALL
+```
 
------
+---
+
+## 遇到的问题与解决方案
+
+| 问题 | 解决方案 |
+|------|---------|
+| JWT 无法服务端撤销 | 引入 Redis 双校验，退出/踢人直接删 Redis |
+| Token 存 localStorage 不安全 | 改为 HttpOnly Cookie，JS 无法读取 |
+| Redis 操作慢 | 配置 Lettuce 连接池（min-idle=2, max-active=8） |
+| 前端加载慢 | CDN 换用 cdnjs + 关闭 HTTP/2 |
+| 数据库 password 字段太短 | 改为 VARCHAR(128) |
+| 搜索结果包含自己和好友 | 后端过滤 excludeIds 列表 |
+| WebSocket 无认证 | 加 JwtWebSocketInterceptor 握手时校验 |
+
+详见 [`项目完整文档.md`](./项目完整文档.md) 第 14 章。
+
+---
+
+## 功能特性
+
+- [x] 注册/登录（BCrypt 加密）
+- [x] JWT 认证 + Redis 双校验
+- [x] HttpOnly Cookie 防 XSS
+- [x] 服务端主动踢人/退出立即失效
+- [x] 实时消息收发（WebSocket）
+- [x] 在线状态显示（绿点/灰点）
+- [x] 好友搜索（排除自己+已加好友）
+- [x] 好友请求处理
+- [x] 会话管理 + 历史消息（最近 100 条）
+- [x] 全局异常处理 + 统一响应格式
+- [x] 赛博朋克主题界面
+- [x] 腾讯云服务器部署
+- [x] Redis 连接池优化
+
+---
+
+## 许可证
+
+本项目仅供学习和交流使用。

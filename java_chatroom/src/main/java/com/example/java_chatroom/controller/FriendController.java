@@ -1,15 +1,15 @@
 package com.example.java_chatroom.controller;
 
+import com.example.java_chatroom.entity.ApiResult;
+import com.example.java_chatroom.entity.Friend;
 import com.example.java_chatroom.entity.FriendRequest;
-import com.example.java_chatroom.entity.User;
+import com.example.java_chatroom.exception.BusinessException;
 import com.example.java_chatroom.service.FriendService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -20,41 +20,35 @@ public class FriendController {
     private FriendService friendService;
 
     @GetMapping("/friendList")
-    public Object getFriendList(HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        if (session == null) {
-            return new ArrayList<>();
+    public ApiResult<List<Friend>> getFriendList(HttpServletRequest request) {
+        Integer userId = (Integer) request.getAttribute("userId");
+        if (userId == null) {
+            throw new BusinessException(401, "未登录");
         }
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return new ArrayList<>();
-        }
-        return friendService.getFriendList(user.getUserId());
+        List<Friend> friendList = friendService.getFriendList(userId);
+        return ApiResult.success(friendList);
     }
 
     @PostMapping("/handleRequest")
-    public Object handleRequest(@RequestBody FriendRequest request, HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        if (session == null) {
-            return new ArrayList<>();
+    public ApiResult<List<Object>> handleRequest(@RequestBody FriendRequest request, HttpServletRequest req) {
+        Integer userId = (Integer) req.getAttribute("userId");
+        if (userId == null) {
+            throw new BusinessException(401, "未登录");
         }
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return new ArrayList<>();
+        List<Object> result = friendService.handleRequest(request.getRequestId(), request.getStatus(), userId);
+        if (result.isEmpty()) {
+            throw new BusinessException("请求不存在或无权限");
         }
-        return friendService.handleRequest(request.getRequestId(), request.getStatus(), user.getUserId());
+        return ApiResult.success(result);
     }
 
     @GetMapping("/getFriendRequests")
-    public Object getFriendRequests(HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        if (session == null) {
-            return new ArrayList<FriendRequest>();
+    public ApiResult<List<FriendRequest>> getFriendRequests(HttpServletRequest req) {
+        Integer userId = (Integer) req.getAttribute("userId");
+        if (userId == null) {
+            throw new BusinessException(401, "未登录");
         }
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return new ArrayList<FriendRequest>();
-        }
-        return friendService.getFriendRequests(user.getUserId());
+        List<FriendRequest> requests = friendService.getFriendRequests(userId);
+        return ApiResult.success(requests);
     }
 }

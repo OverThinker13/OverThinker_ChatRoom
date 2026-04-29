@@ -9,7 +9,7 @@ use java_chatroom;
 create table user (
       userId int primary key auto_increment,
       username varchar(20) unique not null,
-      password varchar(20) not null
+      password varchar(100) not null
 );
 
 -- 2. 好友表

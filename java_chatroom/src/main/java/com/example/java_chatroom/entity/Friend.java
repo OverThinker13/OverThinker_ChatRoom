@@ -9,6 +9,7 @@ public class Friend {
     private int userId;
     private int status;
     private Date createTime;
+    private boolean online;
 
     public int getFriendId() {
         return friendId;
@@ -48,5 +49,13 @@ public class Friend {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 }

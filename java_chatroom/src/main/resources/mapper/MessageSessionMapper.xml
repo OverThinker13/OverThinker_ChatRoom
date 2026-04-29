@@ -21,4 +21,12 @@
     <insert id="addMessageSessionUser" >
         insert into  message_session_user values (#{sessionId}, #{userId})
     </insert>
+
+    <select id="getSessionIdByUserIds" resultType="java.lang.Integer">
+        select a.sessionId
+        from message_session_user a
+        inner join message_session_user b on a.sessionId = b.sessionId
+        where a.userId = #{userId1} and b.userId = #{userId2}
+        limit 1
+    </select>
 </mapper>

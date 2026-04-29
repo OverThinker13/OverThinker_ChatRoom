@@ -1,5 +1,6 @@
 package com.example.java_chatroom.controller;
 
+import com.example.java_chatroom.entity.ApiResult;
 import com.example.java_chatroom.entity.Message;
 import com.example.java_chatroom.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,8 @@ public class MessageController {
     private MessageService messageService;
 
     @GetMapping("/message")
-    public Object getMessage(int sessionId) {
-        return messageService.getMessageList(sessionId);
+    public ApiResult<List<Message>> getMessage(int sessionId) {
+        List<Message> messages = messageService.getMessageList(sessionId);
+        return ApiResult.success(messages);
     }
 }

@@ -1,15 +1,14 @@
 package com.example.java_chatroom.controller;
 
+import com.example.java_chatroom.entity.ApiResult;
 import com.example.java_chatroom.entity.MessageSession;
-import com.example.java_chatroom.entity.User;
+import com.example.java_chatroom.exception.BusinessException;
 import com.example.java_chatroom.service.MessageSessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,23 +20,24 @@ public class MessageSessionController {
     private MessageSessionService messageSessionService;
 
     @GetMapping("/sessionList")
-    public Object getMessageSessionList(HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        if (session == null) {
-            return new ArrayList<MessageSession>();
+    public ApiResult<List<MessageSession>> getMessageSessionList(HttpServletRequest request) {
+        Integer userId = (Integer) request.getAttribute("userId");
+        if (userId == null) {
+            throw new BusinessException(401, "未登录");
         }
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return new ArrayList<MessageSession>();
-        }
-        return messageSessionService.getSessionList(user.getUserId());
+        List<MessageSession> sessionList = messageSessionService.getSessionList(userId);
+        return ApiResult.success(sessionList);
     }
 
     @PostMapping("/session")
-    public Object addMessageSession(int toUserId, @SessionAttribute("user") User user) {
-        int sessionId = messageSessionService.createSession(user.getUserId(), toUserId);
+    public ApiResult<HashMap<String, Integer>> addMessageSession(int toUserId, HttpServletRequest request) {
+        Integer userId = (Integer) request.getAttribute("userId");
+        if (userId == null) {
+            throw new BusinessException(401, "未登录");
+        }
+        int sessionId = messageSessionService.createSession(userId, toUserId);
         HashMap<String, Integer> resp = new HashMap<>();
         resp.put("sessionId", sessionId);
-        return resp;
+        return ApiResult.success(resp);
     }
 }

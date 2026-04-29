@@ -88,11 +88,33 @@
 
 .main .left .user {
     height: 80px;
-    font-size: 20px;
-    line-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 0 20px;
+}
+
+.main .left .user .username {
+    font-size: 20px;
     color: var(--neon-green);
     text-shadow: 0 0 5px rgba(57, 255, 20, 0.4);
+}
+
+.main .left .user .logout-btn {
+    background-color: transparent;
+    color: var(--text-color-faded);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.main .left .user .logout-btn:hover {
+    color: #ff4444;
+    border-color: #ff4444;
+    box-shadow: 0 0 8px rgba(255, 68, 68, 0.3);
 }
 
 .main .left .search {
@@ -651,4 +673,29 @@
     border-radius: 3px;
     cursor: pointer;
     font-size: 12px;
+}
+
+/* -------------------- 7. 在线状态指示器 -------------------- */
+.friend-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.online-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.online-dot.online {
+    background-color: #39ff14;
+    box-shadow: 0 0 6px #39ff14, 0 0 12px rgba(57, 255, 20, 0.4);
+}
+
+.online-dot.offline {
+    background-color: #555;
+    box-shadow: none;
 }
